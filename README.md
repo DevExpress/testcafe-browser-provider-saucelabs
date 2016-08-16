@@ -6,7 +6,7 @@ This is the **saucelabs** browser provider plugin for [TestCafe](http://devexpre
 ## Install
 
 ```
-npm install -g testcafe-browser-provider-saucelabs
+npm install testcafe-browser-provider-saucelabs
 ```
 
 ## Usage
@@ -14,21 +14,15 @@ npm install -g testcafe-browser-provider-saucelabs
 Before using the provider store SauceLabs username and access key in environment variables `SAUCELABS_USERNAME` 
 and `SAUCELABS_ACCESS_KEY`, as described in [SauceLabs documentation](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials).
 
-You can figure out available browser aliases by running
+You can determine the available browser aliases by running
 ```
 testcafe -b saucelabs
-    "saucelabs:Chrome@dev:Windows 10"
-    "saucelabs:Chrome@beta:Windows 10"
-    "saucelabs:Chrome@51.0:Windows 10"
-    "saucelabs:Chrome@50.0:Windows 10"
-    "saucelabs:Chrome@49.0:Windows 10"
-    ...
 ```
 
 When you run tests from the command line, use the browser alias when specifying browsers:
 
 ```
-testcafe chrome,"saucelabs:Chrome@beta:Windows 10" 'path/to/test/file.js'
+testcafe "saucelabs:Chrome@beta:Windows 10" 'path/to/test/file.js'
 ```
 
 
@@ -38,7 +32,7 @@ When you use API, pass the alias to the `browsers()` method:
 testCafe
     .createRunner()
     .src('path/to/test/file.js')
-    .browsers('chrome', 'saucelabs:Chrome@beta:Windows 10')
+    .browsers('saucelabs:Chrome@beta:Windows 10')
     .run();
 ```
 

@@ -4,8 +4,8 @@ var babel   = require('gulp-babel');
 var mocha   = require('gulp-mocha');
 var del     = require('del');
 
-gulp.task('clean', function (cb) {
-    del('lib', cb);
+gulp.task('clean', function () {
+    return del('lib');
 });
 
 gulp.task('lint', function () {
@@ -29,7 +29,7 @@ gulp.task('build', ['clean', 'lint'], function () {
 
 gulp.task('test', ['build'], function () {
     return gulp
-        .src('test/**.js')
+        .src(['test/setup.js', 'test/**/fixtures/*.js'])
         .pipe(mocha({
             ui:       'bdd',
             reporter: 'spec',

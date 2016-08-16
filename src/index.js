@@ -50,8 +50,8 @@ function unfoldTreeNode (node, level = Infinity) {
         return [];
 
     var unfoldedChildren = node.list && level > 0 ?
-                           flatten(node.list.map(child => unfoldTreeNode(child, level - 1))) :
-                           [node.list ? node.list : []];
+        flatten(node.list.map(child => unfoldTreeNode(child, level - 1))) :
+        [node.list ? node.list : []];
 
     return unfoldedChildren.map(child =>[node.name].concat(child));
 }
@@ -90,6 +90,8 @@ function formatAutomationApiData (automationApi, automationApiData) {
 
         if (formattedData.browserName === 'MS Edge')
             formattedData.browserName = 'MicrosoftEdge';
+        else if (formattedData.browserName === 'IE')
+            formattedData.browserName = 'Internet Explorer';
 
         if (MAC_OS_MAP[formattedData.os])
             formattedData.os = MAC_OS_MAP[formattedData.os];
@@ -98,10 +100,11 @@ function formatAutomationApiData (automationApi, automationApiData) {
         formattedData.os  = automationApiData[5];
         formattedData.api = find(automationApiData, item => item && item.api).api;
 
-        var isAndroidJellyBean = formattedData.platformGroup === 'Android' &&
-                                 parseFloat(formattedData.os) >= 4.4;
-
-        var isUnsupportedAndroid = isAndroidJellyBean ? isSelendroid(formattedData) : isAppium(formattedData);
+        var isAndroid             = formattedData.platformGroup === 'Android';
+        var isAndroidJellyBean    = isAndroid && parseFloat(formattedData.os) >= 4.4;
+        var isAndroidOnSelendroid = isAndroid && isSelendroid(formattedData);
+        var isAndroidOnAppium     = isAndroid && isAppium(formattedData);
+        var isUnsupportedAndroid  = isAndroid && (isAndroidJellyBean ? isAndroidOnSelendroid : isAndroidOnAppium);
 
         if (isUnsupportedAndroid)
             return null;
@@ -224,8 +227,10 @@ export default {
                 var browserNameMatched = info.browserName && info.browserName.toLowerCase() === query.name;
                 var deviceNameMatched  = info.device && info.device.toLowerCase() === query.name;
 
-                var browserVersionMatched = info.browserVersion === query.version ||
-                                            info.browserVersion === query.version + '.0';
+                var majorBrowserVersionMatch = info.browserVersion && info.browserVersion.match(/^\d+/);
+                var majorBrowserVersion      = info.browserVersion && majorBrowserVersionMatch && majorBrowserVersionMatch[0];
+                var browserVersionMatched    = info.browserVersion === query.version ||
+                    majorBrowserVersion === query.version;
 
                 var platformVersionMatched = info.os === query.version;
                 var platformNameMatched    = info.os.toLowerCase() === query.platform;
@@ -236,12 +241,12 @@ export default {
                 var isAndroidOnAppium = info.automationApi === 'appium' && info.platformGroup === 'Android';
 
                 var desktopBrowserMatched = browserNameMatched &&
-                                            (browserVersionMatched || isAnyVersion) &&
-                                            (platformNameMatched || isAnyPlatform);
+                    (browserVersionMatched || isAnyVersion) &&
+                    (platformNameMatched || isAnyPlatform);
 
                 var mobileBrowserMatched = deviceNameMatched &&
-                                           (platformVersionMatched || isAnyVersion) &&
-                                           (query.useAppium || !isAndroidOnAppium);
+                    (platformVersionMatched || isAnyVersion) &&
+                    (query.useAppium || !isAndroidOnAppium);
 
                 return desktopBrowserMatched || mobileBrowserMatched;
             });
@@ -285,8 +290,8 @@ export default {
         var platformInfo = this._filterPlatformInfo(query)[0];
 
         return platformInfo.platformGroup === 'Desktop' ?
-               this._generateDesktopCapabilities(query) :
-               this._generateMobileCapabilities(query, platformInfo);
+            this._generateDesktopCapabilities(query) :
+            this._generateMobileCapabilities(query, platformInfo);
     },
 
 
@@ -327,8 +332,7 @@ export default {
     },
 
     async isValidBrowserName (browserName) {
-        return parseCapabilities(browserName).length === 1 &&
-               this._filterPlatformInfo(this._createQuery(browserName)).length;
+        return parseCapabilities(browserName).length === 1 && !!this._filterPlatformInfo(this._createQuery(browserName)).length;
     },
 
     async getBrowserList () {

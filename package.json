@@ -6,7 +6,7 @@
   "homepage": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
   "author": {
     "name": "Developer Express Inc.",
-    "url":  "https://devexpress.com"
+    "url": "https://devexpress.com"
   },
   "main": "lib/index",
   "files": [
@@ -39,11 +39,15 @@
     "babel-preset-es2015": "^6.13.2",
     "babel-preset-es2015-loose": "^7.0.0",
     "babel-preset-stage-3": "^6.11.0",
-    "del": "^1.2.0",
+    "chai": "^3.5.0",
+    "del": "^2.0.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^1.1.1",
     "gulp-mocha": "^2.2.0",
+    "lodash": "^4.15.0",
+    "pinkie": "^2.0.4",
+    "proxyquire": "^1.7.10",
     "publish-please": "^2.1.4"
   }
 }
