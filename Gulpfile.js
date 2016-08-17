@@ -29,10 +29,11 @@ gulp.task('build', ['clean', 'lint'], function () {
 
 gulp.task('test', ['build'], function () {
     return gulp
-        .src(['test/setup.js', 'test/**/fixtures/*.js'])
+        .src(['test/**/*.js', '!test/data/**/*'])
         .pipe(mocha({
             ui:       'bdd',
             reporter: 'spec',
             timeout:  typeof v8debug === 'undefined' ? 2000 : Infinity // NOTE: disable timeouts in debug
         }));
 });
+

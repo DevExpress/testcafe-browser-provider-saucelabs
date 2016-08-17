@@ -48,6 +48,8 @@
     "lodash": "^4.15.0",
     "pinkie": "^2.0.4",
     "proxyquire": "^1.7.10",
-    "publish-please": "^2.1.4"
+    "publish-please": "^2.1.4",
+    "temp": "^0.8.3",
+    "testcafe": "^0.2.3-alpha"
   }
 }

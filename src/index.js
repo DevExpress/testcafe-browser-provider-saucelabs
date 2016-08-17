@@ -19,10 +19,8 @@ const MAC_OS_MAP = {
     'OS X Mountain Lion': 'OS X 10.8'
 };
 
-const promisify  = fn => pify(fn, Promise);
-const request    = promisify(requestAPI, Promise);
-const screenshot = promisify((browser, path, cb) => browser.saveScreenshot(path, cb));
-const resize     = promisify((browser, width, height, cb) => browser.setWindowSize(width, height, cb));
+const promisify = fn => pify(fn, Promise);
+const request   = promisify(requestAPI, Promise);
 
 const formatAssetPart    = str => str.toLowerCase().replace(/[\s.]/g, '-');
 const getAssetNameEnding = (part1, part2) => part1 && part2 ? formatAssetPart(part1 + '_' + part2) : '';
@@ -127,6 +125,16 @@ async function getAutomationApiInfo (automationApi) {
     return automationApiData
         .map(data => formatAutomationApiData(automationApi, data))
         .filter(data => data);
+}
+
+function getCorrectedSize (currentClientAreaSize, currentWindowSize, requestedSize) {
+    var horizontalChrome = currentWindowSize.width - currentClientAreaSize.width;
+    var verticalChrome   = currentWindowSize.height - currentClientAreaSize.height;
+
+    return {
+        width:  requestedSize.width + horizontalChrome,
+        height: requestedSize.height + verticalChrome
+    };
 }
 
 export default {
@@ -340,10 +348,15 @@ export default {
     },
 
     async resizeWindow (id, pageInfo, width, height) {
-        await resize(this.openedBrowsers[id], width, height);
+        var currentWindowSize     = await this.openedBrowsers[id].getWindowSize();
+        var currentClientAreaSize = { width: pageInfo.width, height: pageInfo.height };
+        var requestedSize         = { width, height };
+        var correctedSize         = getCorrectedSize(currentClientAreaSize, currentWindowSize, requestedSize);
+
+        await this.openedBrowsers[id].setWindowSize(correctedSize.width, correctedSize.height);
     },
 
     async takeScreenshot (id, pageInfo, screenshotPath) {
-        await screenshot(this.openedBrowsers[id], screenshotPath);
+        await this.openedBrowsers[id].saveScreenshot(screenshotPath);
     }
 };
