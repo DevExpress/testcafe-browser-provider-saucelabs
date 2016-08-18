@@ -147,32 +147,30 @@ export default {
     isMultiBrowser: true,
 
     _getConnector () {
-        this.connectorPromise = new Promise(async resolve => {
-            var connector = await this.connectorPromise;
+        this.connectorPromise = this.connectorPromise
+            .then(async connector => {
+                if (!connector) {
+                    connector = new SauceLabsConnector(process.env['SAUCE_USERNAME'], process.env['SAUCE_ACCESS_KEY'], {
+                        connectorLogging: false
+                    });
 
-            if (!connector) {
-                connector = new SauceLabsConnector(process.env['SAUCE_USERNAME'], process.env['SAUCE_ACCESS_KEY'], {
-                    connectorLogging: false
-                });
+                    await connector.connect();
+                }
 
-                await connector.connect();
-            }
-
-            resolve(connector);
-        });
+                return connector;
+            });
 
         return this.connectorPromise;
     },
 
     _disposeConnector () {
-        this.connectorPromise = new Promise(async resolve => {
-            var connector = await this.connectorPromise;
+        this.connectorPromise = this.connectorPromise
+            .then(async connector => {
+                if (connector)
+                    await connector.disconnect();
 
-            if (connector)
-                await connector.disconnect();
-
-            resolve(null);
-        });
+                return null;
+            });
 
         return this.connectorPromise;
     },
@@ -312,8 +310,8 @@ export default {
         await this._disposeConnector();
     },
 
-    async openBrowser (id, alias, startPage) {
-        var capabilities = this._generateCapabilities(alias);
+    async openBrowser (id, pageUrl, browserName) {
+        var capabilities = this._generateCapabilities(browserName);
         var connector    = await this._getConnector();
 
         await connector.waitForFreeMachines(
@@ -322,7 +320,7 @@ export default {
             WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT
         );
 
-        var newBrowser = await connector.startBrowser(capabilities, startPage);
+        var newBrowser = await connector.startBrowser(capabilities, pageUrl);
 
         this.openedBrowsers[id] = newBrowser;
 
@@ -347,16 +345,16 @@ export default {
         return this.availableBrowserNames;
     },
 
-    async resizeWindow (id, pageInfo, width, height) {
+    async resizeWindow (id, width, height, currentWidth, currentHeight) {
         var currentWindowSize     = await this.openedBrowsers[id].getWindowSize();
-        var currentClientAreaSize = { width: pageInfo.width, height: pageInfo.height };
+        var currentClientAreaSize = { width: currentWidth, height: currentHeight };
         var requestedSize         = { width, height };
         var correctedSize         = getCorrectedSize(currentClientAreaSize, currentWindowSize, requestedSize);
 
         await this.openedBrowsers[id].setWindowSize(correctedSize.width, correctedSize.height);
     },
 
-    async takeScreenshot (id, pageInfo, screenshotPath) {
+    async takeScreenshot (id, screenshotPath) {
         await this.openedBrowsers[id].saveScreenshot(screenshotPath);
     }
 };

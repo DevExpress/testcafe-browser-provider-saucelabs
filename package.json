@@ -13,7 +13,7 @@
     "lib"
   ],
   "scripts": {
-    "test": "gulp test",
+    "test": "gulp travis",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard"
   },
@@ -49,7 +49,6 @@
     "pinkie": "^2.0.4",
     "proxyquire": "^1.7.10",
     "publish-please": "^2.1.4",
-    "temp": "^0.8.3",
-    "testcafe": "^0.2.3-alpha"
+    "testcafe": "https://github.com/AndreyBelym/testcafe/releases/download/branch-browser-providers-aftermath2/testcafe-0.2.3-alpha.tgz"
   }
 }

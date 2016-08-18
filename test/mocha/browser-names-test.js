@@ -1,11 +1,11 @@
 var expect            = require('chai').expect;
 var Promise           = require('pinkie');
-var saucelabsProvider = require('../');
+var saucelabsProvider = require('../../');
 
 
 describe('Browser names', function () {
     before(function () {
-        this.timeout(10000);
+        this.timeout(20000);
 
         return saucelabsProvider
             .init();
