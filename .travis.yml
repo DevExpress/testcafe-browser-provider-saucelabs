@@ -9,3 +9,7 @@ matrix:
     env: GULP_TRAVIS_TASK="test-testcafe"
   - node_js: "stable"
     env: GULP_TRAVIS_TASK="test-testcafe"
+ fast_finish: true
+
+notifications:
+ email: false

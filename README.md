@@ -1,7 +1,7 @@
 # testcafe-browser-provider-saucelabs
 [![Build Status](https://travis-ci.org/DevExpress/testcafe-browser-provider-saucelabs.svg)](https://travis-ci.org/DevExpress/testcafe-browser-provider-saucelabs)
 
-This is the **saucelabs** browser provider plugin for [TestCafe](http://devexpress.github.io/testcafe).
+This is the [TestCafe](http://devexpress.github.io/testcafe) browser provider plugin for the integration with the [SauceLabs Testing Cloud](https://saucelabs.com/).
 
 ## Install
 

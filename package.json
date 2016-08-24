@@ -45,8 +45,6 @@
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^1.1.1",
     "gulp-mocha": "^2.2.0",
-    "lodash": "^4.15.0",
-    "pinkie": "^2.0.4",
     "proxyquire": "^1.7.10",
     "publish-please": "^2.1.4",
     "testcafe": "https://github.com/AndreyBelym/testcafe/releases/download/branch-browser-providers-aftermath2/testcafe-0.2.3-alpha.tgz"
