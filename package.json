@@ -33,7 +33,7 @@
     "saucelabs-connector": "^0.2.0"
   },
   "devDependencies": {
-    "babel-eslint": "^4.0.10",
+    "babel-eslint": "^6.1.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-runtime": "^6.12.0",
     "babel-preset-es2015": "^6.13.2",
@@ -43,10 +43,10 @@
     "del": "^2.0.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
-    "gulp-eslint": "^1.1.1",
-    "gulp-mocha": "^2.2.0",
-    "proxyquire": "^1.7.10",
+    "gulp-eslint": "^3.0.1",
+    "gulp-mocha": "^3.0.1",
     "publish-please": "^2.1.4",
-    "testcafe": "https://github.com/AndreyBelym/testcafe/releases/download/branch-browser-providers-aftermath2/testcafe-0.2.3-alpha.tgz"
+    "testcafe": "https://github.com/AndreyBelym/testcafe/releases/download/branch-browser-providers-aftermath2/testcafe-0.2.3-alpha.tgz",
+    "tmp": "0.0.28"
   }
 }
