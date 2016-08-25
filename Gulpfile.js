@@ -1,10 +1,10 @@
-var gulp   = require('gulp');
-var eslint = require('gulp-eslint');
-var babel  = require('gulp-babel');
-var mocha  = require('gulp-mocha');
-var del    = require('del');
-var path   = require('path');
-var spawn  = require('./utils/spawn');
+var gulp        = require('gulp');
+var babel       = require('gulp-babel');
+var mocha       = require('gulp-mocha');
+var del         = require('del');
+var path        = require('path');
+var nodeVersion = require('node-version');
+var spawn       = require('./utils/spawn');
 
 
 var packageParentDir  = path.join(__dirname, '../');
@@ -16,6 +16,13 @@ gulp.task('clean', function () {
 });
 
 gulp.task('lint', function () {
+    // TODO: eslint supports node version 4 or higher.
+    // Remove this condition once we get rid of node 0.10 support.
+    if (nodeVersion.major === '0')
+        return null;
+
+    var eslint = require('gulp-eslint');
+
     return gulp
         .src([
             'src/**/*.js',
