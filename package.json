@@ -47,7 +47,7 @@
     "gulp-mocha": "^3.0.1",
     "node-version": "^1.0.0",
     "publish-please": "^2.1.4",
-    "testcafe": "https://github.com/AndreyBelym/testcafe/releases/download/branch-browser-providers-aftermath2/testcafe-0.2.3-alpha.tgz",
+    "testcafe": "^0.3.0-alpha",
     "tmp": "0.0.28"
   }
 }
