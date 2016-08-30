@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - "0.10"
+  - "stable"
+
+os:
+  - linux
+  - osx
+
+env:
+  matrix:
+    - GULP_TRAVIS_TASK="test-mocha"
+    - GULP_TRAVIS_TASK="test-testcafe"
+
+osx_image: xcode8
+
+notifications:
+  email: false
