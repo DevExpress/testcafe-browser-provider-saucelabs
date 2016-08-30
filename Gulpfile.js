@@ -1,6 +1,5 @@
 var gulp        = require('gulp');
 var babel       = require('gulp-babel');
-var mocha       = require('gulp-mocha');
 var sequence    = require('gulp-sequence');
 var del         = require('del');
 var path        = require('path');
@@ -8,23 +7,9 @@ var nodeVersion = require('node-version');
 var spawn       = require('./utils/spawn');
 
 
-function gulpTestTask (taskName/*, ...args*/) {
-    var internalTaskName = taskName + '-internal';
-    var internalTaskArgs = [internalTaskName].concat(Array.prototype.slice.call(arguments, 1));
+var PACKAGE_PARENT_DIR  = path.join(__dirname, '../');
+var PACKAGE_SEARCH_PATH = (process.env.NODE_PATH ? process.env.NODE_PATH + path.delimiter : '') + PACKAGE_PARENT_DIR;
 
-    gulp.task.apply(gulp, internalTaskArgs);
-
-    gulp.task(taskName, function () {
-        if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY)
-            throw new Error('Set SAUCE_USERNAME and SAUCE_ACCESS_KEY before testing!');
-
-        var packageParentDir  = path.join(__dirname, '../');
-        var packageSearchPath = (process.env.NODE_PATH ? process.env.NODE_PATH + path.delimiter : '') + packageParentDir;
-        var gulpCmd           = path.join(__dirname, 'node_modules/.bin/gulp');
-
-        return spawn(gulpCmd, [internalTaskName], { NODE_PATH: packageSearchPath });
-    });
-}
 
 gulp.task('clean', function () {
     return del(['lib', '.screenshots']);
@@ -56,21 +41,41 @@ gulp.task('build', ['clean', 'lint'], function () {
         .pipe(gulp.dest('lib'));
 });
 
-gulpTestTask('test-mocha', ['build'], function () {
-    return gulp
-        .src('test/mocha/**/*.js')
-        .pipe(mocha({
-            ui:       'bdd',
-            reporter: 'spec',
-            timeout:  typeof v8debug === 'undefined' ? 2000 : Infinity // NOTE: disable timeouts in debug
-        }));
+gulp.task('test-mocha', ['build'], function () {
+    if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY)
+        throw new Error('Specify your credentials by using the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables to authenticate to SauceLabs.');
+
+    var mochaCmd = path.join(__dirname, 'node_modules/.bin/mocha');
+
+    var mochaOpts = [
+        '--ui', 'bdd',
+        '--reporter', 'spec',
+        '--timeout', typeof v8debug === 'undefined' ? 2000 : Infinity,
+        'test/mocha/**/*.js'
+    ];
+
+    // NOTE: we must add the parent of plugin directory to NODE_PATH, otherwise testcafe will not be able
+    // to find the plugin. So this function starts mocha with proper NODE_PATH.
+    return spawn(mochaCmd, mochaOpts, { NODE_PATH: PACKAGE_SEARCH_PATH });
 });
 
-gulpTestTask('test-testcafe', ['build'], function () {
+gulp.task('test-testcafe', ['build'], function () {
+    if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY)
+        throw new Error('Specify your credentials by using the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables to authenticate to SauceLabs.');
+
     var testCafeCmd = path.join(__dirname, 'node_modules/.bin/testcafe');
 
-    return spawn(testCafeCmd, ['saucelabs:chrome', 'test/testcafe/**/*.js', '-s', '.screenshots']);
+    var testCafeOpts = [
+        'saucelabs:chrome',
+        'test/testcafe/**/*.js',
+        '-s', '.screenshots'
+    ];
+
+    // NOTE: we must add the parent of plugin directory to NODE_PATH, otherwise testcafe will not be able
+    // to find the plugin. So this function starts testcafe with proper NODE_PATH.
+    return spawn(testCafeCmd, testCafeOpts, { NODE_PATH: PACKAGE_SEARCH_PATH });
 });
 
-gulpTestTask('test', sequence('test-mocha-internal', 'test-testcafe-internal'));
+gulp.task('test', sequence('test-mocha', 'test-testcafe'));
+
 
