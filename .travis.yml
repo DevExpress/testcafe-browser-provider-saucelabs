@@ -7,11 +7,6 @@ os:
   - linux
   - osx
 
-env:
-  matrix:
-    - GULP_TRAVIS_TASK="test-mocha"
-    - GULP_TRAVIS_TASK="test-testcafe"
-
 osx_image: xcode8
 
 notifications:

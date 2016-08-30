@@ -1,15 +1,30 @@
 var gulp        = require('gulp');
 var babel       = require('gulp-babel');
 var mocha       = require('gulp-mocha');
+var sequence    = require('gulp-sequence');
 var del         = require('del');
 var path        = require('path');
 var nodeVersion = require('node-version');
 var spawn       = require('./utils/spawn');
 
 
-var packageParentDir  = path.join(__dirname, '../');
-var packageSearchPath = (process.env.NODE_PATH ? process.env.NODE_PATH + path.delimiter : '') + packageParentDir;
+function gulpTestTask (taskName/*, ...args*/) {
+    var internalTaskName = taskName + '-internal';
+    var internalTaskArgs = [internalTaskName].concat(Array.prototype.slice.call(arguments, 1));
 
+    gulp.task.apply(gulp, internalTaskArgs);
+
+    gulp.task(taskName, function () {
+        if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY)
+            throw new Error('Set SAUCE_USERNAME and SAUCE_ACCESS_KEY before testing!');
+
+        var packageParentDir  = path.join(__dirname, '../');
+        var packageSearchPath = (process.env.NODE_PATH ? process.env.NODE_PATH + path.delimiter : '') + packageParentDir;
+        var gulpCmd           = path.join(__dirname, 'node_modules/.bin/gulp');
+
+        return spawn(gulpCmd, [internalTaskName], { NODE_PATH: packageSearchPath });
+    });
+}
 
 gulp.task('clean', function () {
     return del(['lib', '.screenshots']);
@@ -41,7 +56,7 @@ gulp.task('build', ['clean', 'lint'], function () {
         .pipe(gulp.dest('lib'));
 });
 
-gulp.task('test-mocha-internal', ['build'], function () {
+gulpTestTask('test-mocha', ['build'], function () {
     return gulp
         .src('test/mocha/**/*.js')
         .pipe(mocha({
@@ -51,24 +66,11 @@ gulp.task('test-mocha-internal', ['build'], function () {
         }));
 });
 
-gulp.task('test-mocha', function () {
-    var gulpCmd = path.join(__dirname, 'node_modules/.bin/gulp');
-
-    return spawn(gulpCmd, ['test-mocha-internal'], { NODE_PATH: packageSearchPath });
-});
-
-gulp.task('test-testcafe-internal', ['build'], function () {
+gulpTestTask('test-testcafe', ['build'], function () {
     var testCafeCmd = path.join(__dirname, 'node_modules/.bin/testcafe');
 
     return spawn(testCafeCmd, ['saucelabs:chrome', 'test/testcafe/**/*.js', '-s', '.screenshots']);
 });
 
-gulp.task('test-testcafe', function () {
-    var gulpCmd = path.join(__dirname, 'node_modules/.bin/gulp');
-
-    return spawn(gulpCmd, ['test-testcafe-internal'], { NODE_PATH: packageSearchPath });
-});
-
-if (process.env['GULP_TRAVIS_TASK'])
-    gulp.task('travis', [process.env['GULP_TRAVIS_TASK']]);
+gulpTestTask('test', sequence('test-mocha-internal', 'test-testcafe-internal'));
 
