@@ -21,7 +21,8 @@
   "keywords": [
     "testcafe",
     "browser provider",
-    "plugin"
+    "plugin",
+    "saucelabs"
   ],
   "license": "MIT",
   "dependencies": {
@@ -41,6 +42,7 @@
     "babel-preset-es2015-loose": "^7.0.0",
     "babel-preset-stage-3": "^6.11.0",
     "chai": "^3.5.0",
+    "cross-spawn": "^4.0.0",
     "del": "^2.0.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",

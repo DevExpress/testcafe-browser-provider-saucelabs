@@ -52,7 +52,9 @@ gulp.task('test-mocha-internal', ['build'], function () {
 });
 
 gulp.task('test-mocha', function () {
-    return spawn('gulp', ['test-mocha-internal'], { NODE_PATH: packageSearchPath });
+    var gulpCmd = path.join(__dirname, 'node_modules/.bin/gulp');
+
+    return spawn(gulpCmd, ['test-mocha-internal'], { NODE_PATH: packageSearchPath });
 });
 
 gulp.task('test-testcafe-internal', ['build'], function () {
@@ -62,7 +64,9 @@ gulp.task('test-testcafe-internal', ['build'], function () {
 });
 
 gulp.task('test-testcafe', function () {
-    return spawn('gulp', ['test-testcafe-internal'], { NODE_PATH: packageSearchPath });
+    var gulpCmd = path.join(__dirname, 'node_modules/.bin/gulp');
+
+    return spawn(gulpCmd, ['test-testcafe-internal'], { NODE_PATH: packageSearchPath });
 });
 
 if (process.env['GULP_TRAVIS_TASK'])
