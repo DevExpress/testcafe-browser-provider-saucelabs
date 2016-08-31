@@ -1,19 +1,10 @@
 version: "#{build}"
 clone_depth: 1
-branches:
-  only:
-  - master
 
 environment:
   matrix:
     - nodejs_version: "0.10"
-      GULP_TRAVIS_TASK: "test-mocha"
     - nodejs_version: "stable"
-      GULP_TRAVIS_TASK: "test-mocha"
-    - nodejs_version: "0.10"
-      GULP_TRAVIS_TASK: "test-testcafe"
-    - nodejs_version: "stable"
-      GULP_TRAVIS_TASK: "test-testcafe"
 
 install:
 - ps: Install-Product node $env:nodejs_version

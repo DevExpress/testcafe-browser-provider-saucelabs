@@ -14,7 +14,7 @@
     "utils"
   ],
   "scripts": {
-    "test": "gulp travis",
+    "test": "gulp test",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard"
   },
@@ -44,10 +44,11 @@
     "chai": "^3.5.0",
     "cross-spawn": "^4.0.0",
     "del": "^2.0.0",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^3.0.1",
-    "gulp-mocha": "^3.0.1",
+    "gulp-sequence": "^0.4.6",
+    "mocha": "^3.0.2",
     "node-version": "^1.0.0",
     "publish-please": "^2.1.4",
     "testcafe": "^0.3.0-alpha",
