@@ -12,7 +12,7 @@ var PACKAGE_SEARCH_PATH = (process.env.NODE_PATH ? process.env.NODE_PATH + path.
 
 
 gulp.task('clean', function () {
-    return del(['lib', '.screenshots']);
+    return del('lib');
 });
 
 gulp.task('lint', function () {
