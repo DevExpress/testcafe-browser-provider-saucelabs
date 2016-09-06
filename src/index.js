@@ -9,6 +9,7 @@ import { flatten, find, assign } from 'lodash';
 const SAUCE_LABS_REQUESTED_MACHINES_COUNT      = 1;
 const WAIT_FOR_FREE_MACHINES_REQUEST_INTERVAL  = 60000;
 const WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT = 45;
+const MAX_TUNNEL_CONNECT_RETRY_COUNT           = 3;
 
 const AUTOMATION_APIS = ['selenium', 'appium', 'selendroid'];
 
@@ -144,6 +145,8 @@ export default {
     platformsInfo:    [],
     availableAliases: [],
 
+    tunnelConnectRetryCount: 0,
+
     isMultiBrowser: true,
 
     _getConnector () {
@@ -157,7 +160,16 @@ export default {
                     await connector.connect();
                 }
 
+                this.tunnelConnectRetryCount = 0;
                 return connector;
+            })
+            .catch(error => {
+                this.tunnelConnectRetryCount++;
+
+                if (this.tunnelConnectRetryCount > MAX_TUNNEL_CONNECT_RETRY_COUNT)
+                    throw error;
+
+                return this._getConnector();
             });
 
         return this.connectorPromise;
