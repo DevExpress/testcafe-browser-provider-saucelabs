@@ -18,3 +18,7 @@ install:
 build: off
 test_script:
 - cmd: npm test
+
+branches:
+  except:
+    - /^build-bot-temp-.*$/

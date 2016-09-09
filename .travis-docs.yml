@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "0.10"
+  - "stable"
+
+branches:
+  except:
+    - /^build-bot-temp-.*$/
+
+env:
+  global:
+    TEST_DOCS=true
+
+notifications:
+  email: false
