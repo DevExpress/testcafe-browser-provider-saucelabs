@@ -23,8 +23,8 @@ const MAC_OS_MAP = {
 const promisify = fn => pify(fn, Promise);
 const request   = promisify(requestAPI, Promise);
 
-const formatAssetPart    = str => str.toLowerCase().replace(/[\s.]/g, '-');
-const getAssetNameEnding = (part1, part2) => part1 && part2 ? formatAssetPart(part1 + '_' + part2) : '';
+const formatAssetPart    = (str, filler) => str.toLowerCase().replace(/[\s.]/g, filler);
+const getAssetNameEnding = (part1, part2) => part1 && part2 ? formatAssetPart(part1, '_') + '_' + formatAssetPart(part2, '-') : '';
 const getAssetName       = (automationApi, ...args) => `${automationApi}_${getAssetNameEnding(...args)}`;
 const getAssetUrl        = (...args) => `https://wiki-assets.saucelabs.com/data/${getAssetName(...args)}.json`;
 
@@ -96,8 +96,9 @@ function formatAutomationApiData (automationApi, automationApiData) {
             formattedData.os = MAC_OS_MAP[formattedData.os];
     }
     else {
-        formattedData.os  = automationApiData[5];
-        formattedData.api = find(automationApiData, item => item && item.api).api;
+        formattedData.os            = automationApiData[5];
+        formattedData.api           = find(automationApiData, item => item && item.api).api;
+        formattedData.platformGroup = formattedData.platformGroup.replace(/^(.+?)(\s.*)?$/, '$1');
 
         var isAndroid             = formattedData.platformGroup === 'Android';
         var isAndroidJellyBean    = isAndroid && parseFloat(formattedData.os) >= 4.4;
@@ -136,6 +137,16 @@ function getCorrectedSize (currentClientAreaSize, currentWindowSize, requestedSi
         width:  requestedSize.width + horizontalChrome,
         height: requestedSize.height + verticalChrome
     };
+}
+
+function getAppiumBrowserName (platformInfo) {
+    if (platformInfo.platformGroup === 'iOS')
+        return 'Safari';
+
+    if (platformInfo.device.indexOf('Samsung') > -1)
+        return 'chrome';
+
+    return 'Browser';
 }
 
 export default {
@@ -211,9 +222,6 @@ export default {
         var version  = isSelenium(platformInfo) ? platformInfo.browserVersion : platformInfo.os;
         var platform = isSelenium(platformInfo) ? platformInfo['os'] : '';
 
-        if (platformInfo.automationApi === 'appium' && platformInfo.platformGroup === 'Android')
-            name += ' Appium';
-
         return `${name}@${version}${platform ? ':' + platform : ''}`;
     },
 
@@ -225,11 +233,6 @@ export default {
             version:  browserVersion.toLowerCase(),
             platform: platform.toLowerCase()
         };
-
-        if (/appium$/.test(query.name)) {
-            query.useAppium = true;
-            query.name      = query.name.replace(' appium', '');
-        }
 
         if (/^android emulator/.test(query.name)) {
             query.deviceType = query.name.replace('android emulator ', '');
@@ -256,15 +259,12 @@ export default {
                 var isAnyVersion  = query.version === 'any';
                 var isAnyPlatform = query.platform === 'any';
 
-                var isAndroidOnAppium = info.automationApi === 'appium' && info.platformGroup === 'Android';
-
                 var desktopBrowserMatched = browserNameMatched &&
                     (browserVersionMatched || isAnyVersion) &&
                     (platformNameMatched || isAnyPlatform);
 
                 var mobileBrowserMatched = deviceNameMatched &&
-                    (platformVersionMatched || isAnyVersion) &&
-                    (query.useAppium || !isAndroidOnAppium);
+                    (platformVersionMatched || isAnyVersion);
 
                 return desktopBrowserMatched || mobileBrowserMatched;
             });
@@ -273,17 +273,20 @@ export default {
     _generateMobileCapabilities (query, platformInfo) {
         var capabilities = { deviceName: platformInfo.device };
 
-        if (query.useAppium || platformInfo.platformGroup === 'iOS') {
-            capabilities.browserName  = platformInfo.platformGroup === 'iOS' ? 'Safari' : 'Browser';
+        if (platformInfo.automationApi === 'appium') {
+            capabilities.browserName  = getAppiumBrowserName(platformInfo);
             capabilities.platformName = platformInfo.platformGroup;
+
+            if (query.version !== 'any')
+                capabilities.platformVersion = query.version;
         }
         else {
             capabilities.browserName  = platformInfo.platformGroup;
-            capabilities.platformName = platformInfo.api;
-        }
+            capabilities.platform     = platformInfo.api;
 
-        if (query.version !== 'any')
-            capabilities.platformVersion = query.version;
+            if (query.version !== 'any')
+                capabilities.version = query.version;
+        }
 
         if (query.deviceType)
             capabilities.deviceType = query.deviceType;
