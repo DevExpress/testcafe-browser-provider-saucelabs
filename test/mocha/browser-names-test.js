@@ -28,7 +28,8 @@ describe('Browser names', function () {
                     'Internet Explorer@10.0:Windows 8',
                     'Internet Explorer@11.0:Windows 8.1',
                     'MicrosoftEdge@13.10586:Windows 10',
-                    'Android Emulator Tablet Appium@5.1',
+                    'iPhone 6 Device@9.3',
+                    'Samsung Galaxy S7 Device@6.0',
                     'Android Emulator Phone@4.3',
                     'iPad Simulator@9.3',
                     'iPhone Simulator@9.2'
