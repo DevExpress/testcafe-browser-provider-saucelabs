@@ -11,7 +11,7 @@ npm install testcafe-browser-provider-saucelabs
 ```
 
 ## Usage
-Before using the provider, save the SauceLabs username and access key to environment variables `SAUCELABS_USERNAME` and `SAUCELABS_ACCESS_KEY`, as described in [SauceLabs documentation](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials).
+Before using the provider, save the SauceLabs username and access key to environment variables `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY`, as described in [SauceLabs documentation](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials).
 
 You can determine the available browser aliases by running
 ```
