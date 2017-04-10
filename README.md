@@ -35,5 +35,13 @@ testCafe
     .run();
 ```
 
+## Configuration
+
+Use the following environment variables to set additional configuration options:
+
+ - `SAUCE_JOB` - the text that will be displayed as Job Name on SauceLabs,   
+ 
+ - `SAUCE_BUILD` - the text that will be displayed as Build Name on SauceLabs.
+ 
 ## Author
 Developer Express Inc. (https://devexpress.com)
