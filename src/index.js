@@ -5,6 +5,8 @@ import Promise from 'pinkie';
 import pify from 'pify';
 import { flatten, find, assign } from 'lodash';
 
+const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
+                          'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
 
 const SAUCE_LABS_REQUESTED_MACHINES_COUNT      = 1;
 const WAIT_FOR_FREE_MACHINES_REQUEST_INTERVAL  = 60000;
@@ -180,6 +182,8 @@ export default {
                 if (this.tunnelConnectRetryCount > MAX_TUNNEL_CONNECT_RETRY_COUNT)
                     throw error;
 
+                this.connectorPromise = Promise.resolve(null);
+
                 return this._getConnector();
             });
 
@@ -326,6 +330,9 @@ export default {
     },
 
     async openBrowser (id, pageUrl, browserName) {
+        if (!process.env['SAUCE_USERNAME'] || !process.env['SAUCE_ACCESS_KEY'])
+            throw new Error(AUTH_FAILED_ERROR);
+
         var capabilities = this._generateCapabilities(browserName);
         var connector    = await this._getConnector();
 
@@ -335,7 +342,10 @@ export default {
             WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT
         );
 
-        var newBrowser = await connector.startBrowser(capabilities, pageUrl);
+        var newBrowser = await connector.startBrowser(capabilities, pageUrl, {
+            jobName: process.env['SAUCE_JOB'],
+            build:   process.env['SAUCE_BUILD']
+        });
 
         this.openedBrowsers[id] = newBrowser;
 

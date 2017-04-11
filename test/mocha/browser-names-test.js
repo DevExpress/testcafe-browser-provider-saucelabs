@@ -30,7 +30,7 @@ describe('Browser names', function () {
                     'MicrosoftEdge@13.10586:Windows 10',
                     'iPhone 6 Device@9.3',
                     'Samsung Galaxy S7 Device@6.0',
-                    'Android Emulator Phone@4.3',
+                    'Android Emulator Phone@4.4',
                     'iPad Simulator@9.3',
                     'iPhone Simulator@9.2'
                 ]);
@@ -48,7 +48,7 @@ describe('Browser names', function () {
             'IE@10.0:Windows 8',
             'IE@11:Windows 10',
             'iPhone Simulator@9.2',
-            'Android Emulator Tablet@4.3',
+            'Android Emulator Tablet@4.4',
             'IE@5.0',
             'IE@11:Linux'
         ];
