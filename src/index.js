@@ -342,10 +342,15 @@ export default {
             WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT
         );
 
-        var newBrowser = await connector.startBrowser(capabilities, pageUrl, {
-            jobName: process.env['SAUCE_JOB'],
-            build:   process.env['SAUCE_BUILD']
-        });
+        var jobOptions = Object.assign(
+            {
+                jobName: process.env['SAUCE_JOB'],
+                build:   process.env['SAUCE_BUILD']
+            },
+            process.env['SAUCE_OPTIONS'] ? JSON.parse(process.env['SAUCE_OPTIONS']) : {}
+        );
+
+        var newBrowser = await connector.startBrowser(capabilities, pageUrl, jobOptions);
 
         this.openedBrowsers[id] = newBrowser;
 
