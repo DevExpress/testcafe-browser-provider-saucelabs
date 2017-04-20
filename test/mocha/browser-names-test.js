@@ -21,7 +21,7 @@ describe('Browser names', function () {
             .getBrowserList()
             .then(function (list) {
                 var commonBrowsers = [
-                    'Chrome@51.0:OS X 10.9',
+                    'Chrome@51.0:OS X 10.10',
                     'Firefox@45.0:Linux',
                     'Safari@9.0:OS X 10.11',
                     'Internet Explorer@9.0:Windows 7',

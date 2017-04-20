@@ -4,6 +4,7 @@ import requestAPI from 'request';
 import Promise from 'pinkie';
 import pify from 'pify';
 import { flatten, find, assign } from 'lodash';
+import * as fs from 'fs';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
                           'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
@@ -151,6 +152,14 @@ function getAppiumBrowserName (platformInfo) {
         return 'chrome';
 
     return 'Browser';
+}
+
+function getAdditionalConfig (filename) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filename, 'utf8', (err, data) =>
+            err ? reject(err) : resolve(JSON.parse(data))
+        );
+    });
 }
 
 export default {
@@ -344,10 +353,15 @@ export default {
             WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT
         );
 
-        var newBrowser = await connector.startBrowser(capabilities, pageUrl, {
-            jobName: process.env['SAUCE_JOB'],
-            build:   process.env['SAUCE_BUILD']
-        });
+        var jobOptions = Object.assign(
+            {
+                jobName: process.env['SAUCE_JOB'],
+                build:   process.env['SAUCE_BUILD']
+            },
+            process.env['SAUCE_CONFIG_PATH'] ? await getAdditionalConfig(process.env['SAUCE_CONFIG_PATH']) : {}
+        );
+
+        var newBrowser = await connector.startBrowser(capabilities, pageUrl, jobOptions);
 
         this.openedBrowsers[id] = newBrowser;
 
