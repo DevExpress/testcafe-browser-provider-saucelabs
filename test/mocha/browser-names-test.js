@@ -20,7 +20,7 @@ describe('Browser names', function () {
         return saucelabsProvider
             .getBrowserList()
             .then(function (list) {
-                expect(list).to.include.members([
+                var commonBrowsers = [
                     'Chrome@51.0:OS X 10.9',
                     'Firefox@45.0:Linux',
                     'Safari@9.0:OS X 10.11',
@@ -28,12 +28,18 @@ describe('Browser names', function () {
                     'Internet Explorer@10.0:Windows 8',
                     'Internet Explorer@11.0:Windows 8.1',
                     'MicrosoftEdge@13.10586:Windows 10',
-                    'iPhone 6 Device@9.3',
-                    'Samsung Galaxy S7 Device@6.0',
+                    'Samsung Galaxy S4 Emulator@4.4',
                     'Android Emulator Phone@4.4',
                     'iPad Simulator@9.3',
                     'iPhone Simulator@9.2'
-                ]);
+                ];
+
+                var areBrowsersInList = commonBrowsers
+                    .map(function (browser) {
+                        return list.indexOf(browser) > -1;
+                    });
+
+                expect(areBrowsersInList).eql(Array(commonBrowsers.length).fill(true));
             });
     });
 
