@@ -381,5 +381,15 @@ export default {
 
     async takeScreenshot (id, screenshotPath) {
         await this.openedBrowsers[id].saveScreenshot(screenshotPath);
+    },
+
+    async reportJobResult (id, jobResult, jobData) {
+        if (jobResult !== this.JOB_RESULT.done && jobResult !== this.JOB_RESULT.errored)
+            return;
+
+        var browser   = this.openedBrowsers[id];
+        var jobPassed = jobResult === this.JOB_RESULT.done && jobData.total === jobData.passed;
+
+        await browser.sauceJobStatus(jobPassed);
     }
 };
