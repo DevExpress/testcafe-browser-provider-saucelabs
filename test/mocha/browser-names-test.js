@@ -31,7 +31,7 @@ describe('Browser names', function () {
                     'Samsung Galaxy S4 Emulator@4.4',
                     'Android Emulator Phone@4.4',
                     'iPad Simulator@9.3',
-                    'iPhone Simulator@9.2'
+                    'iPhone Simulator@9.3'
                 ];
 
                 var areBrowsersInList = commonBrowsers
@@ -62,13 +62,13 @@ describe('Browser names', function () {
         var expectedResults = [
             true,
             true,
+            false,
             true,
             true,
             true,
             true,
             true,
-            true,
-            true,
+            false,
             true,
             false,
             false
