@@ -39,9 +39,11 @@ testCafe
 
 Use the following environment variables to set additional configuration options:
 
- - `SAUCE_JOB` - the text that will be displayed as Job Name on SauceLabs,   
- 
+ - `SAUCE_JOB` - the text that will be displayed as Job Name on SauceLabs,
+
  - `SAUCE_BUILD` - the text that will be displayed as Build Name on SauceLabs.
- 
+
+ - `SAUCE_CONFIG_PATH` - Path to a file which contains additional job options as JSON. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions) for a full list.
+
 ## Author
 Developer Express Inc. (https://devexpress.com)
