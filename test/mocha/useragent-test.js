@@ -38,7 +38,7 @@ describe('Useragent info', function () {
 
                 var reportData = JSON.parse(report);
 
-                expect(reportData.userAgents[0]).to.contain('https://saucelabs.com/tests');
+                expect(reportData.userAgents[0]).to.contain('https://app.saucelabs.com/tests');
             });
     });
 });
