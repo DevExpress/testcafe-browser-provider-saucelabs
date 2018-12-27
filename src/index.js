@@ -316,7 +316,8 @@ export default {
 
         if (query.platform !== 'any')
             capabilities.platform = query.platform;
-
+        if (process.env['SAUCE_SCREEN_RESOLUTION'])
+            capabilities.screenResolution = process.env['SAUCE_SCREEN_RESOLUTION'];
         return capabilities;
     },
 
