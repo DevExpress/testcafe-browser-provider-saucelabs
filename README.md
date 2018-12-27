@@ -45,7 +45,10 @@ Use the following environment variables to set additional configuration options:
 
  - `SAUCE_CONFIG_PATH` - Path to a file which contains additional job options as JSON. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions) for a full list.
  
- - `SAUCE_SCREEN_RESOLUTION` - Set screen resolution of the browser (only works for desktop, does not work for mobile).  Example: `export SAUCE_SCREEN_RESOLUTION=1920x1080`.  See [Specifying the Screen Resolution](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-SpecifyingtheScreenResolution) for more info.
+ - `SAUCE_SCREEN_RESOLUTION` - allows to set the screen resolution for desktop browsers in the `${width}x${height}` format, has no effect when specified for a mobile browser. See [Specifying the Screen Resolution](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-SpecifyingtheScreenResolution) for additional information. Example:
+```sh
+export SAUCE_SCREEN_RESOLUTION="1920x1080"
+```
  
 ## Author
 Developer Express Inc. (https://devexpress.com)
