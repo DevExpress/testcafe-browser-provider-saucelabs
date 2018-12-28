@@ -1,12 +1,15 @@
 {
   "name": "testcafe-browser-provider-saucelabs",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "saucelabs TestCafe browser provider plugin.",
   "repository": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
   "homepage": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
   "author": {
     "name": "Developer Express Inc.",
     "url": "https://devexpress.com"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   },
   "main": "lib/index",
   "files": [
