@@ -17,7 +17,7 @@ const MAX_TUNNEL_CONNECT_RETRY_COUNT           = 3;
 const AUTOMATION_APIS = ['selenium', 'appium', 'selendroid'];
 
 const MAC_OS_MAP = {
-    'masOS Mojave':      'macOS 10.14',
+    'macOS Mojave':      'macOS 10.14',
     'macOS High Sierra': 'macOS 10.13',
     'macOS Sierra':      'macOS 10.12',
     'OS X El Capitan':   'OS X 10.11',
