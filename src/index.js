@@ -1,10 +1,10 @@
-import SauceLabsConnector from 'saucelabs-connector';
 import parseCapabilities from 'desired-capabilities';
-import requestAPI from 'request';
-import Promise from 'pinkie';
-import pify from 'pify';
-import { flatten, find, assign } from 'lodash';
 import * as fs from 'fs';
+import { assign, find, flatten } from 'lodash';
+import pify from 'pify';
+import Promise from 'pinkie';
+import requestAPI from 'request';
+import SauceLabsConnector from 'saucelabs-connector';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
                           'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
@@ -159,6 +159,16 @@ function getAdditionalConfig (filename) {
             err ? reject(err) : resolve(JSON.parse(data))
         );
     });
+}
+
+function getCapabilitiesOverrides (filename) {
+    if (fs.existsSync(filename)) {
+        const data = fs.readFileSync(filename, 'utf8');
+
+        return JSON.parse(data);
+    }
+
+    return {};
 }
 
 export default {
@@ -325,9 +335,14 @@ export default {
         var query        = this._createQuery(browserName);
         var platformInfo = this._filterPlatformInfo(query)[0];
 
-        return platformInfo.platformGroup === 'Desktop' ?
+        const capabilities = platformInfo.platformGroup === 'Desktop' ?
             this._generateDesktopCapabilities(query) :
             this._generateMobileCapabilities(query, platformInfo);
+
+        return Object.assign({},
+            capabilities,
+            getCapabilitiesOverrides(process.env['SAUCE_CAPABILITIES_OVERRIDES_PATH'])
+        );
     },
 
 

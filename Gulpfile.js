@@ -73,5 +73,6 @@ exports.clean = clean;
 exports.lint  = lint;
 exports.build = gulp.parallel(lint, gulp.series(clean, build));
 exports.test  = gulp.series(exports.build, testMocha, testTestcafe);
+exports.testMocha = gulp.series(exports.build, testMocha);
 
 
