@@ -176,8 +176,11 @@ export default {
         this.connectorPromise = this.connectorPromise
             .then(async connector => {
                 if (!connector) {
+                    const additionalConfigOptions = process.env['SAUCE_CONFIG_PATH'] && await getAdditionalConfig(process.env['SAUCE_CONFIG_PATH']);
+
                     connector = new SauceLabsConnector(process.env['SAUCE_USERNAME'], process.env['SAUCE_ACCESS_KEY'], {
-                        connectorLogging: false
+                        connectorLogging: false,
+                        ...additionalConfigOptions,
                     });
 
                     await connector.connect();
