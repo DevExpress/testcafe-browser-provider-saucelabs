@@ -1,10 +1,10 @@
-import parseCapabilities from 'desired-capabilities';
-import * as fs from 'fs';
-import { assign, find, flatten } from 'lodash';
-import pify from 'pify';
-import Promise from 'pinkie';
-import requestAPI from 'request';
 import SauceLabsConnector from 'saucelabs-connector';
+import parseCapabilities from 'desired-capabilities';
+import requestAPI from 'request';
+import Promise from 'pinkie';
+import pify from 'pify';
+import { flatten, find, assign } from 'lodash';
+import * as fs from 'fs';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
                           'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
