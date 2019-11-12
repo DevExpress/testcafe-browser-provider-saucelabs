@@ -3,6 +3,7 @@ import parseCapabilities from 'desired-capabilities';
 import requestAPI from 'request';
 import Promise from 'pinkie';
 import pify from 'pify';
+import util from 'util';
 import { flatten, find, assign } from 'lodash';
 import * as fs from 'fs';
 
@@ -26,6 +27,7 @@ const MAC_OS_MAP = {
 
 const promisify = fn => pify(fn, Promise);
 const request   = promisify(requestAPI, Promise);
+const readFile  = util.promisify(fs.readFile);
 
 const formatAssetPart    = (str, filler) => str.toLowerCase().replace(/[\s.]/g, filler);
 const getAssetNameEnding = (part1, part2) => part1 && part2 ? formatAssetPart(part1, '_') + '_' + formatAssetPart(part2, '-') : '';
@@ -35,6 +37,18 @@ const getAssetUrl        = (...args) => `https://wiki-assets.saucelabs.com/data/
 const isSelenium   = platformInfo => platformInfo.automationApi === 'selenium';
 const isAppium     = platformInfo => platformInfo.automationApi === 'appium';
 const isSelendroid = platformInfo => platformInfo.automationApi === 'selendroid';
+
+async function readConfigFromFile (filename) {
+    try {
+        const data = await readFile(filename, 'utf8');
+
+        return JSON.parse(data);
+    }
+    catch (err) {
+        return {};
+    }
+}
+
 
 async function fetchAsset (assetNameParts) {
     var url      = getAssetUrl(...assetNameParts);
@@ -151,24 +165,6 @@ function getAppiumBrowserName (platformInfo) {
         return 'chrome';
 
     return 'Browser';
-}
-
-function getAdditionalConfig (filename) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(filename, 'utf8', (err, data) =>
-            err ? reject(err) : resolve(JSON.parse(data))
-        );
-    });
-}
-
-function getCapabilitiesOverrides (filename) {
-    if (fs.existsSync(filename)) {
-        const data = fs.readFileSync(filename, 'utf8');
-
-        return JSON.parse(data);
-    }
-
-    return {};
 }
 
 export default {
@@ -331,7 +327,7 @@ export default {
         return capabilities;
     },
 
-    _generateCapabilities (browserName) {
+    async _generateCapabilities (browserName) {
         var query        = this._createQuery(browserName);
         var platformInfo = this._filterPlatformInfo(query)[0];
 
@@ -339,9 +335,14 @@ export default {
             this._generateDesktopCapabilities(query) :
             this._generateMobileCapabilities(query, platformInfo);
 
+        let capabilitiesOverride = {};
+
+        if (process.env['SAUCE_CAPABILITIES_OVERRIDES_PATH'])
+            capabilitiesOverride = await readConfigFromFile(process.env['SAUCE_CAPABILITIES_OVERRIDES_PATH']);
+
         return Object.assign({},
             capabilities,
-            getCapabilitiesOverrides(process.env['SAUCE_CAPABILITIES_OVERRIDES_PATH'])
+            capabilitiesOverride
         );
     },
 
@@ -359,8 +360,8 @@ export default {
         if (!process.env['SAUCE_USERNAME'] || !process.env['SAUCE_ACCESS_KEY'])
             throw new Error(AUTH_FAILED_ERROR);
 
-        var capabilities = this._generateCapabilities(browserName);
-        var connector    = await this._getConnector();
+        const capabilities = await this._generateCapabilities(browserName);
+        const connector    = await this._getConnector();
 
         await connector.waitForFreeMachines(
             SAUCE_LABS_REQUESTED_MACHINES_COUNT,
@@ -373,7 +374,7 @@ export default {
                 jobName: process.env['SAUCE_JOB'],
                 build:   process.env['SAUCE_BUILD']
             },
-            process.env['SAUCE_CONFIG_PATH'] ? await getAdditionalConfig(process.env['SAUCE_CONFIG_PATH']) : {}
+            process.env['SAUCE_CONFIG_PATH'] ? await readConfigFromFile(process.env['SAUCE_CONFIG_PATH']) : {}
         );
 
         var newBrowser = await connector.startBrowser(capabilities, pageUrl, jobOptions);
