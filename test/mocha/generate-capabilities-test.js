@@ -20,8 +20,8 @@ describe('Internal generateCapabilities test', function () {
         return provider.dispose();
     });
 
-    it('should generate basic desktop capabilities', function () {
-        const result = provider._generateCapabilities(desktopUA);
+    it('should generate basic desktop capabilities', async function () {
+        const result = await provider._generateCapabilities(desktopUA);
 
         expect(result).eql({
             browserName: 'chrome',
@@ -30,10 +30,10 @@ describe('Internal generateCapabilities test', function () {
         });
     });
 
-    it('should set the screen resolution from SAUCE_SCREEN_RESOLUTION', function () {
+    it('should set the screen resolution from SAUCE_SCREEN_RESOLUTION', async function () {
         sandbox.stub(process, 'env').value({ 'SAUCE_SCREEN_RESOLUTION': '1920x1200' });
 
-        const result = provider._generateCapabilities(desktopUA);
+        const result = await provider._generateCapabilities(desktopUA);
 
         expect(result).eql({
             browserName:      'chrome',
@@ -43,13 +43,13 @@ describe('Internal generateCapabilities test', function () {
         });
     });
 
-    it('should provide capabilities overrides from file', function () {
+    it('should provide capabilities overrides from file', async function () {
         sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'overrides.json' });
         mockfs({
             'overrides.json': JSON.stringify({ extendedDebugging: true })
         });
 
-        const result = provider._generateCapabilities(desktopUA);
+        const result = await provider._generateCapabilities(desktopUA);
 
         expect(result).eql({
             browserName:       'chrome',
@@ -59,10 +59,10 @@ describe('Internal generateCapabilities test', function () {
         });
     });
 
-    it('should not override anything if overrides file does not exist', function () {
+    it('should not override anything if overrides file does not exist', async function () {
         sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'overrides.json' });
 
-        const result = provider._generateCapabilities(desktopUA);
+        const result = await provider._generateCapabilities(desktopUA);
 
         expect(result).eql({
             browserName: 'chrome',
