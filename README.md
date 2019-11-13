@@ -43,7 +43,9 @@ Use the following environment variables to set additional configuration options:
 
  - `SAUCE_BUILD` - the text that will be displayed as Build Name on SauceLabs.
 
- - `SAUCE_CONFIG_PATH` - Path to a file which contains additional job options as JSON. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions) for a full list.
+ - `SAUCE_CONFIG_PATH` - path to a file which contains additional **job options** as JSON. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-TestAnnotation) for a full list.
+ 
+ - `SAUCE_CAPABILITIES_OVERRIDES_PATH` - path to a file that contains overrides for capabilities. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options) for details.
  
  - `SAUCE_SCREEN_RESOLUTION` - allows setting the screen resolution for desktop browsers in the `${width}x${height}` format, has no effect when specified for a mobile browser. See [Specifying the Screen Resolution](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-SpecifyingtheScreenResolution) for additional information. 
  

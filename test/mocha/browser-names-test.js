@@ -28,10 +28,10 @@ describe('Browser names', function () {
                     'Internet Explorer@10.0:Windows 8',
                     'Internet Explorer@11.0:Windows 8.1',
                     'MicrosoftEdge@13.10586:Windows 10',
-                    'Samsung Galaxy S4 Emulator@4.4',
-                    'Android Emulator Phone@4.4',
-                    'iPad Simulator@9.3',
-                    'iPhone Simulator@9.3'
+                    'Samsung Galaxy Tab S3 GoogleAPI Emulator@8.1',
+                    'Android Emulator Phone@8.0',
+                    'iPad Simulator@13.0',
+                    'iPhone Simulator@13.0'
                 ];
 
                 var areBrowsersInList = commonBrowsers
@@ -54,7 +54,7 @@ describe('Browser names', function () {
             'IE@10.0:Windows 8',
             'IE@11:Windows 10',
             'iPhone Simulator@9.2',
-            'Android Emulator Tablet@4.4',
+            'Android Emulator Tablet@8.0',
             'IE@5.0',
             'IE@11:Linux'
         ];
