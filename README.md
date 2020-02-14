@@ -49,6 +49,8 @@ Use the following environment variables to set additional configuration options:
  
  - `SAUCE_SCREEN_RESOLUTION` - allows setting the screen resolution for desktop browsers in the `${width}x${height}` format, has no effect when specified for a mobile browser. See [Specifying the Screen Resolution](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-SpecifyingtheScreenResolution) for additional information. 
  
+ - `SAUCE_API_HOST` - if your SauceLabs account is registered in an EU country, you need to specify an EU-based data center, for instance, `eu-central-1.saucelabs.com`.
+ 
 Example:
 ```sh
 export SAUCE_SCREEN_RESOLUTION="1920x1080"
