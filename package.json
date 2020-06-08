@@ -1,11 +1,11 @@
 {
-  "name": "testcafe-browser-provider-saucelabs",
-  "version": "1.8.0",
-  "description": "saucelabs TestCafe browser provider plugin.",
-  "repository": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
-  "homepage": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
+  "name": "testcafe-browser-provider-saucelabs-kraken",
+  "version": "1.8.0.0",
+  "description": "saucelabs TestCafe browser provider plugin for Kraken Project.",
+  "repository": "https://github.com/SebastianChece2389/testcafe-browser-provider-saucelabs",
+  "homepage": "https://github.com/SebastianChece2389/testcafe-browser-provider-saucelabs",
   "author": {
-    "name": "Developer Express Inc.",
+    "name": "Developer Express Inc. forked by Kraken Project",
     "url": "https://devexpress.com"
   },
   "engines": {
