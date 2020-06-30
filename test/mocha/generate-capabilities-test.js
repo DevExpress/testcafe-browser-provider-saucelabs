@@ -4,7 +4,7 @@ const sandbox = require('sinon').createSandbox();
 const provider = require('../../');
 
 describe('Internal generateCapabilities test', function () {
-    const desktopUA = 'Chrome@51.0:OS X 10.10';
+    const desktopUA = 'Chrome@51.0:macOS Catalina';
 
     before(function () {
         this.timeout(20000);
