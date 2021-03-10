@@ -18,6 +18,7 @@ const MAX_TUNNEL_CONNECT_RETRY_COUNT           = 3;
 const AUTOMATION_APIS = ['selenium', 'appium', 'selendroid'];
 
 const MAC_OS_MAP = {
+    'macOS Big Sur':     'macOS 11.00',
     'macOS Catalina':    'macOS 10.15',
     'macOS Mojave':      'macOS 10.14',
     'macOS High Sierra': 'macOS 10.13',
@@ -52,8 +53,8 @@ async function readConfigFromFile (filename) {
 
 
 async function fetchAsset (assetNameParts) {
-    var url      = getAssetUrl(...assetNameParts);
-    var response = await request(url);
+    const url      = getAssetUrl(...assetNameParts);
+    const response = await request(url);
 
     try {
         return JSON.parse(response.body);
@@ -67,7 +68,7 @@ function unfoldTreeNode (node, level = Infinity) {
     if (!node)
         return [];
 
-    var unfoldedChildren = node.list && level > 0 ?
+    const unfoldedChildren = node.list && level > 0 ?
         flatten(node.list.map(child => unfoldTreeNode(child, level - 1))) :
         [node.list ? node.list : []];
 
@@ -75,7 +76,7 @@ function unfoldTreeNode (node, level = Infinity) {
 }
 
 async function getAssetData (assetNameParts, unfoldingLevel = Infinity) {
-    var assetDataTree = await fetchAsset(assetNameParts);
+    const assetDataTree = await fetchAsset(assetNameParts);
 
     if (!assetDataTree)
         return [];
@@ -84,8 +85,8 @@ async function getAssetData (assetNameParts, unfoldingLevel = Infinity) {
 }
 
 async function getDeviceData (automationApi, automationApiData) {
-    var assetNamePart1 = automationApi === 'selenium' ? automationApiData[2] : automationApiData[1];
-    var assetNamePart2 = automationApi === 'selenium' ? automationApiData[4] : automationApiData[2];
+    const assetNamePart1 = automationApi === 'selenium' ? automationApiData[2] : automationApiData[1];
+    const assetNamePart2 = automationApi === 'selenium' ? automationApiData[4] : automationApiData[2];
 
     return await getAssetData([automationApi, assetNamePart1, assetNamePart2], 2);
 }
@@ -95,7 +96,7 @@ function concatDeviceData (automationApiData, devicesData) {
 }
 
 function formatAutomationApiData (automationApi, automationApiData) {
-    var formattedData = {
+    const formattedData = {
         automationApi: automationApi,
         platformGroup: automationApiData[1],
         device:        automationApiData[2]
@@ -119,11 +120,11 @@ function formatAutomationApiData (automationApi, automationApiData) {
         formattedData.api           = find(automationApiData, item => item && item.api).api;
         formattedData.platformGroup = formattedData.platformGroup.replace(/^(.+?)(\s.*)?$/, '$1');
 
-        var isAndroid             = formattedData.platformGroup === 'Android';
-        var isAndroidJellyBean    = isAndroid && parseFloat(formattedData.os) >= 4.4;
-        var isAndroidOnSelendroid = isAndroid && isSelendroid(formattedData);
-        var isAndroidOnAppium     = isAndroid && isAppium(formattedData);
-        var isUnsupportedAndroid  = isAndroid && (isAndroidJellyBean ? isAndroidOnSelendroid : isAndroidOnAppium);
+        const isAndroid             = formattedData.platformGroup === 'Android';
+        const isAndroidJellyBean    = isAndroid && parseFloat(formattedData.os) >= 4.4;
+        const isAndroidOnSelendroid = isAndroid && isSelendroid(formattedData);
+        const isAndroidOnAppium     = isAndroid && isAppium(formattedData);
+        const isUnsupportedAndroid  = isAndroid && (isAndroidJellyBean ? isAndroidOnSelendroid : isAndroidOnAppium);
 
         if (isUnsupportedAndroid)
             return null;
@@ -133,9 +134,9 @@ function formatAutomationApiData (automationApi, automationApiData) {
 }
 
 async function getAutomationApiInfo (automationApi) {
-    var automationApiData = await getAssetData([automationApi]);
+    let automationApiData = await getAssetData([automationApi]);
 
-    var devicesData = await Promise.all(automationApiData.map(data => getDeviceData(automationApi, data)));
+    const devicesData = await Promise.all(automationApiData.map(data => getDeviceData(automationApi, data)));
 
     automationApiData = automationApiData
         .map((data, index) => concatDeviceData(data, devicesData[index]))
@@ -149,8 +150,8 @@ async function getAutomationApiInfo (automationApi) {
 }
 
 function getCorrectedSize (currentClientAreaSize, currentWindowSize, requestedSize) {
-    var horizontalChrome = currentWindowSize.width - currentClientAreaSize.width;
-    var verticalChrome   = currentWindowSize.height - currentClientAreaSize.height;
+    const horizontalChrome = currentWindowSize.width - currentClientAreaSize.width;
+    const verticalChrome   = currentWindowSize.height - currentClientAreaSize.height;
 
     return {
         width:  requestedSize.width + horizontalChrome,
@@ -220,12 +221,12 @@ export default {
     },
 
     async _fetchPlatformInfoAndAliases () {
-        var automationApiInfoPromises = AUTOMATION_APIS.map(automationApi => getAutomationApiInfo(automationApi));
-        var platformsInfo             = await Promise.all(automationApiInfoPromises);
+        const automationApiInfoPromises = AUTOMATION_APIS.map(automationApi => getAutomationApiInfo(automationApi));
+        const platformsInfo             = await Promise.all(automationApiInfoPromises);
 
         this.platformsInfo = flatten(platformsInfo);
 
-        var unstructuredBrowserNames = this.platformsInfo
+        const unstructuredBrowserNames = this.platformsInfo
             .map(platformInfo => this._createAliasesForPlatformInfo(platformInfo));
 
         this.availableBrowserNames = flatten(unstructuredBrowserNames);
@@ -239,17 +240,17 @@ export default {
             ];
         }
 
-        var name     = isSelenium(platformInfo) ? platformInfo.browserName : platformInfo.device;
-        var version  = isSelenium(platformInfo) ? platformInfo.browserVersion : platformInfo.os;
-        var platform = isSelenium(platformInfo) ? platformInfo['os'] : '';
+        const name     = isSelenium(platformInfo) ? platformInfo.browserName : platformInfo.device;
+        const version  = isSelenium(platformInfo) ? platformInfo.browserVersion : platformInfo.os;
+        const platform = isSelenium(platformInfo) ? platformInfo['os'] : '';
 
         return `${name}@${version}${platform ? ':' + platform : ''}`;
     },
 
     _createQuery (capabilities) {
-        var { browserName, browserVersion, platform } = parseCapabilities(capabilities)[0];
+        const { browserName, browserVersion, platform } = parseCapabilities(capabilities)[0];
 
-        var query = {
+        const query = {
             name:     browserName.toLowerCase(),
             version:  browserVersion.toLowerCase(),
             platform: platform.toLowerCase()
@@ -266,25 +267,25 @@ export default {
     _filterPlatformInfo (query) {
         return this.platformsInfo
             .filter(info => {
-                var browserNameMatched = info.browserName && info.browserName.toLowerCase() === query.name;
-                var deviceNameMatched  = info.device && info.device.toLowerCase() === query.name;
+                const browserNameMatched = info.browserName && info.browserName.toLowerCase() === query.name;
+                const deviceNameMatched  = info.device && info.device.toLowerCase() === query.name;
 
-                var majorBrowserVersionMatch = info.browserVersion && info.browserVersion.match(/^\d+/);
-                var majorBrowserVersion      = info.browserVersion && majorBrowserVersionMatch && majorBrowserVersionMatch[0];
-                var browserVersionMatched    = info.browserVersion === query.version ||
+                const majorBrowserVersionMatch = info.browserVersion && info.browserVersion.match(/^\d+/);
+                const majorBrowserVersion      = info.browserVersion && majorBrowserVersionMatch && majorBrowserVersionMatch[0];
+                const browserVersionMatched    = info.browserVersion === query.version ||
                     majorBrowserVersion === query.version;
 
-                var platformVersionMatched = info.os === query.version;
-                var platformNameMatched    = info.os.toLowerCase() === query.platform;
+                const platformVersionMatched = info.os === query.version;
+                const platformNameMatched    = info.os.toLowerCase() === query.platform;
 
-                var isAnyVersion  = query.version === 'any';
-                var isAnyPlatform = query.platform === 'any';
+                const isAnyVersion  = query.version === 'any';
+                const isAnyPlatform = query.platform === 'any';
 
-                var desktopBrowserMatched = browserNameMatched &&
+                const desktopBrowserMatched = browserNameMatched &&
                     (browserVersionMatched || isAnyVersion) &&
                     (platformNameMatched || isAnyPlatform);
 
-                var mobileBrowserMatched = deviceNameMatched &&
+                const mobileBrowserMatched = deviceNameMatched &&
                     (platformVersionMatched || isAnyVersion);
 
                 return desktopBrowserMatched || mobileBrowserMatched;
@@ -292,7 +293,7 @@ export default {
     },
 
     _generateMobileCapabilities (query, platformInfo) {
-        var capabilities = { deviceName: platformInfo.device };
+        const capabilities = { deviceName: platformInfo.device };
 
         if (platformInfo.automationApi === 'appium') {
             capabilities.browserName  = getAppiumBrowserName(platformInfo);
@@ -316,7 +317,7 @@ export default {
     },
 
     _generateDesktopCapabilities (query) {
-        var capabilities = { browserName: query.name };
+        const capabilities = { browserName: query.name };
 
         if (query.version !== 'any')
             capabilities.version = query.version;
@@ -329,8 +330,8 @@ export default {
     },
 
     async _generateCapabilities (browserName) {
-        var query        = this._createQuery(browserName);
-        var platformInfo = this._filterPlatformInfo(query)[0];
+        const query        = this._createQuery(browserName);
+        const platformInfo = this._filterPlatformInfo(query)[0];
 
         const capabilities = platformInfo.platformGroup === 'Desktop' ?
             this._generateDesktopCapabilities(query) :
@@ -370,7 +371,7 @@ export default {
             WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT
         );
 
-        var jobOptions = Object.assign(
+        const jobOptions = Object.assign(
             {
                 jobName: process.env['SAUCE_JOB'],
                 build:   process.env['SAUCE_BUILD']
@@ -378,17 +379,17 @@ export default {
             process.env['SAUCE_CONFIG_PATH'] ? await readConfigFromFile(process.env['SAUCE_CONFIG_PATH']) : {}
         );
 
-        var newBrowser = await connector.startBrowser(capabilities, pageUrl, jobOptions);
+        const newBrowser = await connector.startBrowser(capabilities, pageUrl, jobOptions);
 
         this.openedBrowsers[id] = newBrowser;
 
-        var sessionUrl = await connector.getSessionUrl(newBrowser);
+        const sessionUrl = await connector.getSessionUrl(newBrowser);
 
         this.setUserAgentMetaInfo(id, `${sessionUrl}`);
     },
 
     async closeBrowser (id) {
-        var connector = await this._getConnector();
+        const connector = await this._getConnector();
 
         await connector.stopBrowser(this.openedBrowsers[id]);
 
@@ -404,10 +405,10 @@ export default {
     },
 
     async resizeWindow (id, width, height, currentWidth, currentHeight) {
-        var currentWindowSize     = await this.openedBrowsers[id].getWindowSize();
-        var currentClientAreaSize = { width: currentWidth, height: currentHeight };
-        var requestedSize         = { width, height };
-        var correctedSize         = getCorrectedSize(currentClientAreaSize, currentWindowSize, requestedSize);
+        const currentWindowSize     = await this.openedBrowsers[id].getWindowSize();
+        const currentClientAreaSize = { width: currentWidth, height: currentHeight };
+        const requestedSize         = { width, height };
+        const correctedSize         = getCorrectedSize(currentClientAreaSize, currentWindowSize, requestedSize);
 
         await this.openedBrowsers[id].setWindowSize(correctedSize.width, correctedSize.height);
     },
@@ -420,8 +421,8 @@ export default {
         if (jobResult !== this.JOB_RESULT.done && jobResult !== this.JOB_RESULT.errored)
             return;
 
-        var browser   = this.openedBrowsers[id];
-        var jobPassed = jobResult === this.JOB_RESULT.done && jobData.total === jobData.passed;
+        const browser   = this.openedBrowsers[id];
+        const jobPassed = jobResult === this.JOB_RESULT.done && jobData.total === jobData.passed;
 
         await browser.sauceJobStatus(jobPassed);
     }

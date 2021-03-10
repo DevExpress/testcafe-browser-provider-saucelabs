@@ -1,6 +1,6 @@
 {
   "name": "testcafe-browser-provider-saucelabs",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "saucelabs TestCafe browser provider plugin.",
   "repository": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
   "homepage": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
@@ -9,7 +9,7 @@
     "url": "https://devexpress.com"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.0.0"
   },
   "main": "lib/index",
   "files": [
@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "test": "gulp test",
-    "publish-please": "publish-please",
+    "publish-please": "del-cli package-lock.json node_modules && npm i && publish-please",
     "prepublish": "publish-please guard"
   },
   "keywords": [
@@ -46,15 +46,15 @@
     "babel-preset-stage-3": "^6.11.0",
     "chai": "^3.5.0",
     "cross-spawn": "^4.0.0",
-    "del": "^2.0.0",
+    "del": "^3.0.0",
     "gulp": "^4.0.0",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^3.0.1",
-    "mocha": "^5.2.0",
+    "mocha": "^8.3.1",
     "mock-fs": "^4.8.0",
     "publish-please": "^5.4.3",
     "sinon": "^7.2.5",
-    "testcafe": "^0.23.3",
+    "testcafe": "latest",
     "tmp": "0.0.28"
   }
 }
