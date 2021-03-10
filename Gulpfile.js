@@ -59,7 +59,7 @@ function testTestcafe () {
     var testCafeCmd = path.join(__dirname, 'node_modules/.bin/testcafe');
 
     var testCafeOpts = [
-        'saucelabs:Chrome@88.0:macOS 11.00',
+        'saucelabs:chrome',
         'test/testcafe/**/*.js',
         '-s', '.screenshots'
     ];
