@@ -69,10 +69,9 @@ function testTestcafe () {
     return spawn(testCafeCmd, testCafeOpts, { NODE_PATH: PACKAGE_SEARCH_PATH });
 }
 
-exports.clean     = clean;
-exports.lint      = lint;
-exports.build     = gulp.parallel(lint, gulp.series(clean, build));
-exports.test      = gulp.series(exports.build, testMocha, testTestcafe);
-exports.testMocha = gulp.series(exports.build, testMocha);
-
-
+exports.clean       = clean;
+exports.lint        = lint;
+exports.build       = gulp.parallel(lint, gulp.series(clean, build));
+exports.testMocha   = gulp.series(exports.build, testMocha);
+exports.testNoBuild = gulp.series(testMocha, testTestcafe);
+exports.test        = gulp.series(exports.build, exports.testNoBuild);
