@@ -184,8 +184,11 @@ export default {
         this.connectorPromise = this.connectorPromise
             .then(async connector => {
                 if (!connector) {
+                    const sauceConnectConfig = process.env['SAUCE_CONNECT_OVERRIDES_PATH'] ? await readConfigFromFile(process.env['SAUCE_CONNECT_OVERRIDES_PATH']) : {};
+
                     connector = new SauceLabsConnector(process.env['SAUCE_USERNAME'], process.env['SAUCE_ACCESS_KEY'], {
-                        connectorLogging: false
+                        connectorLogging: false,
+                        ...sauceConnectConfig
                     });
 
                     await connector.connect();
