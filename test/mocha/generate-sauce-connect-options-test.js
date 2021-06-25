@@ -1,5 +1,4 @@
 const expect   = require('chai').expect;
-const mockfs   = require('mock-fs');
 const sandbox  = require('sinon').createSandbox();
 const provider = require('../../lib');
 
@@ -11,7 +10,6 @@ describe('Internal generateSauceConnectOptions test', function () {
 
     afterEach(function () {
         sandbox.restore();
-        mockfs.restore();
     });
 
     after(function () {
@@ -25,10 +23,7 @@ describe('Internal generateSauceConnectOptions test', function () {
     });
 
     it('should provide connect overrides from file', async function () {
-        sandbox.stub(process, 'env').value({ 'SAUCE_CONNECT_OVERRIDES_PATH': 'overrides.json' });
-        mockfs({
-            'overrides.json': JSON.stringify({ directDomains: ['*.google.com'], noSslBumpDomains: 'all' })
-        });
+        sandbox.stub(process, 'env').value({ 'SAUCE_CONNECT_OVERRIDES_PATH': 'test/mocha/data/connect_overrides.json' });
 
         const result = await provider._generateSauceConnectOptions();
 
@@ -40,7 +35,7 @@ describe('Internal generateSauceConnectOptions test', function () {
     });
 
     it('should not override anything if overrides file does not exist', async function () {
-        sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'overrides.json' });
+        sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'does-not-exist-file.json' });
 
         const result = await provider._generateSauceConnectOptions();
 

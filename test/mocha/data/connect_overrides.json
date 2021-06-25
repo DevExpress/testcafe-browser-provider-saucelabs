@@ -1,0 +1,4 @@
+{
+    "directDomains": ["*.google.com"],
+    "noSslBumpDomains": "all"
+}

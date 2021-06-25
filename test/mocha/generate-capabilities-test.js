@@ -1,5 +1,4 @@
 const expect   = require('chai').expect;
-const mockfs   = require('mock-fs');
 const sandbox  = require('sinon').createSandbox();
 const provider = require('../../');
 
@@ -13,7 +12,6 @@ describe('Internal generateCapabilities test', function () {
 
     afterEach(function () {
         sandbox.restore();
-        mockfs.restore();
     });
 
     after(function () {
@@ -103,10 +101,7 @@ describe('Internal generateCapabilities test', function () {
     });
 
     it('should provide capabilities overrides from file', async function () {
-        sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'overrides.json' });
-        mockfs({
-            'overrides.json': JSON.stringify({ extendedDebugging: true })
-        });
+        sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'test/mocha/data/capabilities_overrides.json' });
 
         const result = await provider._generateCapabilities(desktopUA);
 
@@ -119,7 +114,7 @@ describe('Internal generateCapabilities test', function () {
     });
 
     it('should not override anything if overrides file does not exist', async function () {
-        sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'overrides.json' });
+        sandbox.stub(process, 'env').value({ 'SAUCE_CAPABILITIES_OVERRIDES_PATH': 'does-not-exist.json' });
 
         const result = await provider._generateCapabilities(desktopUA);
 
