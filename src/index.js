@@ -184,9 +184,13 @@ export default {
         this.connectorPromise = this.connectorPromise
             .then(async connector => {
                 if (!connector) {
-                    connector = new SauceLabsConnector(process.env['SAUCE_USERNAME'], process.env['SAUCE_ACCESS_KEY'], {
-                        connectorLogging: false
-                    });
+                    const sauceConnectOptions = await this._generateSauceConnectOptions();
+
+                    connector = new SauceLabsConnector(
+                        process.env['SAUCE_USERNAME'],
+                        process.env['SAUCE_ACCESS_KEY'],
+                        sauceConnectOptions
+                    );
 
                     await connector.connect();
                 }
@@ -218,6 +222,19 @@ export default {
             });
 
         return this.connectorPromise;
+    },
+
+    async _generateSauceConnectOptions () {
+        const defaults = {
+            connectorLogging: false
+        };
+
+        const overrides = process.env['SAUCE_CONNECT_OVERRIDES_PATH'] ? await readConfigFromFile(process.env['SAUCE_CONNECT_OVERRIDES_PATH']) : {};
+
+        return Object.assign({},
+            defaults,
+            overrides
+        );
     },
 
     async _fetchPlatformInfoAndAliases () {

@@ -44,6 +44,8 @@ Use the following environment variables to set additional configuration options:
  - `SAUCE_BUILD` - the text that will be displayed as Build Name on SauceLabs.
 
  - `SAUCE_CONFIG_PATH` - path to a file which contains additional **job options** as JSON. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-TestAnnotation) for a full list.
+
+ - `SAUCE_CONNECT_OVERRIDES_PATH` - path to a file that overrides SauceLabs [connector options](https://github.com/DevExpress/saucelabs-connector). See [Sauce Connect launcher documentation](https://github.com/bermi/sauce-connect-launcher#advanced-usage) for more information.
  
  - `SAUCE_CAPABILITIES_OVERRIDES_PATH` - path to a file that contains overrides for capabilities. See [SauceLabs Test Configuration](https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options) for details.
  
