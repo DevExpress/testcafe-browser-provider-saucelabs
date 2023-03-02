@@ -4,7 +4,7 @@ import requestAPI from 'request';
 import Promise from 'pinkie';
 import pify from 'pify';
 import util from 'util';
-import { flatten, find, assign } from 'lodash';
+import { assign } from 'lodash';
 import * as fs from 'fs';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
@@ -15,30 +15,11 @@ const WAIT_FOR_FREE_MACHINES_REQUEST_INTERVAL  = 60000;
 const WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT = 45;
 const MAX_TUNNEL_CONNECT_RETRY_COUNT           = 3;
 
-const AUTOMATION_APIS = ['selenium', 'appium', 'selendroid'];
-
-const MAC_OS_MAP = {
-    'macOS Big Sur':     'macOS 11.00',
-    'macOS Catalina':    'macOS 10.15',
-    'macOS Mojave':      'macOS 10.14',
-    'macOS High Sierra': 'macOS 10.13',
-    'macOS Sierra':      'macOS 10.12',
-    'OS X El Capitan':   'OS X 10.11',
-    'OS X Yosemite':     'OS X 10.10'
-};
-
 const promisify = fn => pify(fn, Promise);
 const request   = promisify(requestAPI, Promise);
 const readFile  = util.promisify(fs.readFile);
 
-const formatAssetPart    = (str, filler) => str.toLowerCase().replace(/[\s.]/g, filler);
-const getAssetNameEnding = (part1, part2) => part1 && part2 ? formatAssetPart(part1, '_') + '_' + formatAssetPart(part2, '-') : '';
-const getAssetName       = (automationApi, ...args) => `${automationApi}_${getAssetNameEnding(...args)}`;
-const getAssetUrl        = (...args) => `https://wiki-assets.saucelabs.com/data/${getAssetName(...args)}.json`;
-
-const isSelenium   = platformInfo => platformInfo.automationApi === 'selenium';
-const isAppium     = platformInfo => platformInfo.automationApi === 'appium';
-const isSelendroid = platformInfo => platformInfo.automationApi === 'selendroid';
+const isDesktop = platformInfo => platformInfo.platformGroup === 'Desktop';
 
 async function readConfigFromFile (filename) {
     try {
@@ -52,9 +33,18 @@ async function readConfigFromFile (filename) {
 }
 
 
-async function fetchAsset (assetNameParts) {
-    const url      = getAssetUrl(...assetNameParts);
-    const response = await request(url);
+async function fetchPlatforms () {
+    if (!process.env['SAUCE_USERNAME'] || !process.env['SAUCE_ACCESS_KEY'])
+        throw new Error(AUTH_FAILED_ERROR);
+
+    const host = process.env.SAUCE_API_HOST || 'us-west-1.saucelabs.com';
+    const response = await request(`https://api.${host}/rest/v1.1/info/platforms/all`,
+        {
+            'auth': {
+                'user': process.env['SAUCE_USERNAME'],
+                'pass': process.env['SAUCE_ACCESS_KEY']
+            }
+        });
 
     try {
         return JSON.parse(response.body);
@@ -64,89 +54,53 @@ async function fetchAsset (assetNameParts) {
     }
 }
 
-function unfoldTreeNode (node, level = Infinity) {
-    if (!node)
-        return [];
+function formatAutomationApiData (platform) {
+    let platformGroup;
 
-    const unfoldedChildren = node.list && level > 0 ?
-        flatten(node.list.map(child => unfoldTreeNode(child, level - 1))) :
-        [node.list ? node.list : []];
+    switch (platform.api_name) {
+        case 'android':
+            platformGroup = 'Android';
+            break;
+        case 'iphone':
+        case 'ipad':
+            platformGroup = 'iOS';
+            break;
+        default:
+            platformGroup = 'Desktop';
+    }
 
-    return unfoldedChildren.map(child =>[node.name].concat(child));
-}
-
-async function getAssetData (assetNameParts, unfoldingLevel = Infinity) {
-    const assetDataTree = await fetchAsset(assetNameParts);
-
-    if (!assetDataTree)
-        return [];
-
-    return unfoldTreeNode(assetDataTree, unfoldingLevel);
-}
-
-async function getDeviceData (automationApi, automationApiData) {
-    const assetNamePart1 = automationApi === 'selenium' ? automationApiData[2] : automationApiData[1];
-    const assetNamePart2 = automationApi === 'selenium' ? automationApiData[4] : automationApiData[2];
-
-    return await getAssetData([automationApi, assetNamePart1, assetNamePart2], 2);
-}
-
-function concatDeviceData (automationApiData, devicesData) {
-    return devicesData.map(data => automationApiData.concat(data));
-}
-
-function formatAutomationApiData (automationApi, automationApiData) {
     const formattedData = {
-        automationApi: automationApi,
-        platformGroup: automationApiData[1],
-        device:        automationApiData[2]
+        automationBackend: platform.automation_backend,
+        platformGroup:     platformGroup,
     };
 
-    if (isSelenium(formattedData)) {
-        formattedData.os             = automationApiData[4];
-        formattedData.browserName    = automationApiData[6];
-        formattedData.browserVersion = automationApiData[7];
+    if (platformGroup === 'Desktop') {
+        formattedData.os = platform.os;
+        formattedData.browserName = platform.api_name;
+        formattedData.browserVersion = platform.short_version;
 
-        if (formattedData.browserName === 'MS Edge')
-            formattedData.browserName = 'MicrosoftEdge';
-        else if (formattedData.browserName === 'IE')
-            formattedData.browserName = 'Internet Explorer';
-
-        if (MAC_OS_MAP[formattedData.os])
-            formattedData.os = MAC_OS_MAP[formattedData.os];
+        if (platform.os.startsWith('Windows'))
+            formattedData.device = 'PC';
+        else if (platform.os.startsWith('Mac'))
+            formattedData.device = 'Mac';
     }
-    else {
-        formattedData.os            = automationApiData[5];
-        formattedData.api           = find(automationApiData, item => item && item.api).api;
-        formattedData.platformGroup = formattedData.platformGroup.replace(/^(.+?)(\s.*)?$/, '$1');
-
-        const isAndroid             = formattedData.platformGroup === 'Android';
-        const isAndroidJellyBean    = isAndroid && parseFloat(formattedData.os) >= 4.4;
-        const isAndroidOnSelendroid = isAndroid && isSelendroid(formattedData);
-        const isAndroidOnAppium     = isAndroid && isAppium(formattedData);
-        const isUnsupportedAndroid  = isAndroid && (isAndroidJellyBean ? isAndroidOnSelendroid : isAndroidOnAppium);
-
-        if (isUnsupportedAndroid)
-            return null;
+    // Filtering out the combo of webdriver + mobile. We would have duplicate entries otherwise.
+    else if ((platformGroup === 'Android' || platformGroup === 'iOS') && platform.automation_backend === 'appium') {
+        formattedData.os = platform.short_version;
+        formattedData.device = platform.long_name;
     }
+    else
+        return null;
 
     return formattedData;
 }
 
-async function getAutomationApiInfo (automationApi) {
-    let automationApiData = await getAssetData([automationApi]);
+async function getAutomationApiInfo () {
+    const platforms = await fetchPlatforms();
 
-    const devicesData = await Promise.all(automationApiData.map(data => getDeviceData(automationApi, data)));
-
-    automationApiData = automationApiData
-        .map((data, index) => concatDeviceData(data, devicesData[index]))
-        .filter(data => data.length);
-
-    automationApiData = flatten(automationApiData);
-
-    return automationApiData
-        .map(data => formatAutomationApiData(automationApi, data))
-        .filter(data => data);
+    return platforms
+        .map(platform => formatAutomationApiData(platform))
+        .filter(platform => platform);
 }
 
 function getCorrectedSize (currentClientAreaSize, currentWindowSize, requestedSize) {
@@ -161,12 +115,12 @@ function getCorrectedSize (currentClientAreaSize, currentWindowSize, requestedSi
 
 function getAppiumBrowserName (platformInfo) {
     if (platformInfo.platformGroup === 'iOS')
-        return 'Safari';
+        return 'safari';
 
-    if (platformInfo.device.indexOf('Samsung') > -1)
+    if (platformInfo.platformGroup === 'Android')
         return 'chrome';
 
-    return 'Browser';
+    throw new Error(`unsupported platform group ${platformInfo.platformGroup}`);
 }
 
 export default {
@@ -238,15 +192,13 @@ export default {
     },
 
     async _fetchPlatformInfoAndAliases () {
-        const automationApiInfoPromises = AUTOMATION_APIS.map(automationApi => getAutomationApiInfo(automationApi));
-        const platformsInfo             = await Promise.all(automationApiInfoPromises);
-
-        this.platformsInfo = flatten(platformsInfo);
+        this.platformsInfo = await getAutomationApiInfo();
 
         const unstructuredBrowserNames = this.platformsInfo
-            .map(platformInfo => this._createAliasesForPlatformInfo(platformInfo));
+            .map(platformInfo => this._createAliasesForPlatformInfo(platformInfo))
+            .flat();
 
-        this.availableBrowserNames = flatten(unstructuredBrowserNames);
+        this.availableBrowserNames = unstructuredBrowserNames.sort();
     },
 
     _createAliasesForPlatformInfo (platformInfo) {
@@ -257,9 +209,9 @@ export default {
             ];
         }
 
-        const name     = isSelenium(platformInfo) ? platformInfo.browserName : platformInfo.device;
-        const version  = isSelenium(platformInfo) ? platformInfo.browserVersion : platformInfo.os;
-        const platform = isSelenium(platformInfo) ? platformInfo['os'] : '';
+        const name     = isDesktop(platformInfo) ? platformInfo.browserName : platformInfo.device;
+        const version  = isDesktop(platformInfo) ? platformInfo.browserVersion : platformInfo.os;
+        const platform = isDesktop(platformInfo) ? platformInfo['os'] : '';
 
         return `${name}@${version}${platform ? ':' + platform : ''}`;
     },
@@ -310,22 +262,18 @@ export default {
     },
 
     _generateMobileCapabilities (query, platformInfo) {
-        const capabilities = { deviceName: platformInfo.device };
+        // sanity check
+        if (platformInfo.automationBackend !== 'appium')
+            throw new Error('tried generating mobile capabilities for non appium backend');
 
-        if (platformInfo.automationApi === 'appium') {
-            capabilities.browserName  = getAppiumBrowserName(platformInfo);
-            capabilities.platformName = platformInfo.platformGroup;
+        const capabilities = {
+            deviceName:   platformInfo.device,
+            browserName:  getAppiumBrowserName(platformInfo),
+            platformName: platformInfo.platformGroup
+        };
 
-            if (query.version !== 'any')
-                capabilities.platformVersion = query.version;
-        }
-        else {
-            capabilities.browserName  = platformInfo.platformGroup;
-            capabilities.platform     = platformInfo.api;
-
-            if (query.version !== 'any')
-                capabilities.version = query.version;
-        }
+        if (query.version !== 'any')
+            capabilities.platformVersion = query.version;
 
         if (query.deviceType)
             capabilities.deviceType = query.deviceType;
