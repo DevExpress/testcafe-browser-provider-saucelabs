@@ -19,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: test-server
     steps:
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v6
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.payload.inputs.sha,
@@ -30,15 +30,15 @@ jobs:
               state: 'pending',
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{github.event.inputs.merged_sha || github.event.inputs.sha}}
           
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v6
         with:
           script: |
             const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -47,7 +47,7 @@ jobs:
             
             for(let i = 0;i<36&&!artifacts.total_count;i++,await delay(5000)) {
               try {
-                ({ data: artifacts } = await github.actions.listWorkflowRunArtifacts({
+                ({ data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
                 repo: context.repo.repo,
                 owner: context.repo.owner,
                 run_id: context.payload.inputs.deploy_run_id
@@ -69,7 +69,7 @@ jobs:
         id: npm-cache-dir
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         if: ${{ !env.NO_CACHE }}
         id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
         with:
@@ -83,10 +83,10 @@ jobs:
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v6
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.payload.inputs.sha,
@@ -94,11 +94,11 @@ jobs:
               state: 'success',
               target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v6
         if: failure() || cancelled()
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.payload.inputs.sha,
