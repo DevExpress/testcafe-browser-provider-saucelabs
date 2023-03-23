@@ -21,15 +21,11 @@ describe('Browser names', function () {
             .getBrowserList()
             .then(function (list) {
                 var commonBrowsers = [
-                    'Chrome@51.0:OS X 10.10',
-                    'Firefox@45.0:Linux',
-                    'Safari@9.0:OS X 10.11',
-                    'Internet Explorer@9.0:Windows 7',
-                    'Internet Explorer@10.0:Windows 8',
-                    'Internet Explorer@11.0:Windows 8.1',
-                    'MicrosoftEdge@13.10586:Windows 10',
-                    'Samsung Galaxy Tab S3 GoogleAPI Emulator@8.1',
-                    'Android Emulator Phone@8.0',
+                    'chrome@100:Mac 13',
+                    'safari@16:Mac 13',
+                    'MicrosoftEdge@110:Windows 11',
+                    'Samsung Galaxy S10 WQHD GoogleAPI Emulator@11.0',
+                    'Android GoogleAPI Emulator@12.0',
                     'iPad Simulator@13.0',
                     'iPhone Simulator@13.0'
                 ];
@@ -50,13 +46,13 @@ describe('Browser names', function () {
             'Opera:Linux',
             'Firefox',
             'MicrosoftEdge',
-            'IE@9',
-            'IE@10.0:Windows 8',
-            'IE@11:Windows 10',
+            'Internet Explorer@9',
+            'Internet Explorer@10:Windows 2008',
+            'Internet Explorer@11:Windows 10',
             'iPhone Simulator@9.2',
             'Android Emulator Tablet@8.0',
-            'IE@5.0',
-            'IE@11:Linux'
+            'Internet Explorer@5.0',
+            'Internet Explorer@11:Linux'
         ];
 
         var expectedResults = [

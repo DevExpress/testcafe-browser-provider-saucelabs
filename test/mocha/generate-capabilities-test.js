@@ -3,7 +3,7 @@ const sandbox  = require('sinon').createSandbox();
 const provider = require('../../');
 
 describe('Internal generateCapabilities test', function () {
-    const desktopUA = 'Chrome@88.0:macOS 11.00';
+    const desktopUA = 'Chrome@88:Mac 13';
 
     before(function () {
         this.timeout(20000);
@@ -24,56 +24,56 @@ describe('Internal generateCapabilities test', function () {
                 desktopUA,
                 expected: {
                     browserName: 'chrome',
-                    version:     '88.0',
-                    platform:    'macos 11.00'
+                    version:     '88',
+                    platform:    'mac 13'
                 }
             },
             {
-                desktopUA: 'Chrome@88.0:macOS 10.15',
+                desktopUA: 'Chrome@88:mac 10.15',
                 expected:  {
                     browserName: 'chrome',
-                    version:     '88.0',
-                    platform:    'macos 10.15'
+                    version:     '88',
+                    platform:    'mac 10.15'
                 }
             },
             {
-                desktopUA: 'Chrome@88.0:macOS 10.14',
+                desktopUA: 'Chrome@88:mac 10.14',
                 expected:  {
                     browserName: 'chrome',
-                    version:     '88.0',
-                    platform:    'macos 10.14'
+                    version:     '88',
+                    platform:    'mac 10.14'
                 }
             },
             {
-                desktopUA: 'Chrome@88.0:macOS 10.13',
+                desktopUA: 'Chrome@88:mac 10.13',
                 expected:  {
                     browserName: 'chrome',
-                    version:     '88.0',
-                    platform:    'macos 10.13'
+                    version:     '88',
+                    platform:    'mac 10.13'
                 }
             },
             {
-                desktopUA: 'Chrome@88.0:macOS 10.12',
+                desktopUA: 'Chrome@88:mac 10.12',
                 expected:  {
                     browserName: 'chrome',
-                    version:     '88.0',
-                    platform:    'macos 10.12'
+                    version:     '88',
+                    platform:    'mac 10.12'
                 }
             },
             {
-                desktopUA: 'Chrome@88.0:OS X 10.11',
+                desktopUA: 'Chrome@88:mac 10.11',
                 expected:  {
                     browserName: 'chrome',
-                    version:     '88.0',
-                    platform:    'os x 10.11'
+                    version:     '88',
+                    platform:    'mac 10.11'
                 }
             },
             {
-                desktopUA: 'Chrome@87.0:OS X 10.10',
+                desktopUA: 'Chrome@87:mac 10.10',
                 expected:  {
                     browserName: 'chrome',
-                    version:     '87.0',
-                    platform:    'os x 10.10'
+                    version:     '87',
+                    platform:    'mac 10.10'
                 }
             }
         ];
@@ -94,8 +94,8 @@ describe('Internal generateCapabilities test', function () {
 
         expect(result).eql({
             browserName:      'chrome',
-            version:          '88.0',
-            platform:         'macos 11.00',
+            version:          '88',
+            platform:         'mac 13',
             screenResolution: '1920x1200'
         });
     });
@@ -107,8 +107,8 @@ describe('Internal generateCapabilities test', function () {
 
         expect(result).eql({
             browserName:       'chrome',
-            version:           '88.0',
-            platform:          'macos 11.00',
+            version:           '88',
+            platform:          'mac 13',
             extendedDebugging: true
         });
     });
@@ -120,8 +120,8 @@ describe('Internal generateCapabilities test', function () {
 
         expect(result).eql({
             browserName: 'chrome',
-            version:     '88.0',
-            platform:    'macos 11.00'
+            version:     '88',
+            platform:    'mac 13'
         });
     });
 });
