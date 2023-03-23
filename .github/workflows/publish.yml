@@ -3,6 +3,16 @@ name: Publish
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      sha:
+        desciption: 'The test commit SHA or ref'
+        required: true
+        default: 'master'
+      merged_sha:
+        description: 'The merge commit SHA' 
+      deploy_run_id:
+        description: 'The ID of a deployment workspace run with artifacts'
 
 jobs:
   publish:
