@@ -1,9 +1,9 @@
 {
-  "name": "testcafe-browser-provider-saucelabs-test",
+  "name": "testcafe-browser-provider-saucelabs",
   "version": "2.0.0",
   "description": "saucelabs TestCafe browser provider plugin.",
-  "repository": "https://github.com/Aleksey28/testcafe-browser-provider-saucelabs",
-  "homepage": "https://github.com/Aleksey28/testcafe-browser-provider-saucelabs",
+  "repository": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
+  "homepage": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
   "author": {
     "name": "Developer Express Inc.",
     "url": "https://devexpress.com"
