@@ -1,13 +1,7 @@
 import https from 'https';
-import { parse as parseUrl } from 'url';
 
 export function getRequest (url, user, password) {
-    const { hostname, port, path } = parseUrl(url);
-
     const options = {
-        hostname,
-        port,
-        path,
         headers: {
             'Authorization': 'Basic ' + new Buffer(user + ':' + password).toString('base64')
         }
