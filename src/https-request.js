@@ -1,14 +1,16 @@
 import https from 'https';
 
-export function getRequest (url, user, password) {
+export function httpsRequest ({ hostname, path, user, password }) {
     const options = {
+        hostname,
+        path,
         headers: {
             'Authorization': 'Basic ' + new Buffer(user + ':' + password).toString('base64')
         }
     };
 
     return new Promise((resolve, reject) => {
-        const request = https.get(url, options, response => {
+        const request = https.get(options, response => {
             let data = '';
     
             response.on('data', chunk => {

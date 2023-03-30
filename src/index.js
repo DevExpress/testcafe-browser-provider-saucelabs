@@ -4,7 +4,7 @@ import Promise from 'pinkie';
 import util from 'util';
 import { assign } from 'lodash';
 import * as fs from 'fs';
-import { getRequest } from './promisified-get-request';
+import { httpsRequest } from './https-request';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
                           'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
@@ -35,7 +35,12 @@ async function fetchPlatforms () {
         throw new Error(AUTH_FAILED_ERROR);
 
     const host = process.env.SAUCE_API_HOST || 'us-west-1.saucelabs.com';
-    const response = await getRequest(`https://api.${host}/rest/v1.1/info/platforms/all`, process.env['SAUCE_USERNAME'], process.env['SAUCE_ACCESS_KEY']);
+    const response = await httpsRequest({
+        hostname: `api.${host}`,
+        path:     '/rest/v1.1/info/platforms/all',
+        user:     process.env['SAUCE_USERNAME'],
+        password: process.env['SAUCE_ACCESS_KEY']
+    });
 
     try {
         return JSON.parse(response.body);
