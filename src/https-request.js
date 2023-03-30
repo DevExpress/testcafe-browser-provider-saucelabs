@@ -12,7 +12,7 @@ export function httpsRequest ({ hostname, path, user, password }) {
     return new Promise((resolve, reject) => {
         const request = https.get(options, response => {
             let data = '';
-    
+
             response.on('data', chunk => {
                 data += chunk.toString('utf8');
             });
