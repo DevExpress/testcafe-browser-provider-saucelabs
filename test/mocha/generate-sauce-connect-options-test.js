@@ -30,7 +30,7 @@ describe('Internal generateSauceConnectOptions test', function () {
         expect(result).eql({
             connectorLogging: false,
             directDomains:    ['*.google.com'], 
-            noSslBumpDomains: 'all'
+            noSslBumpDomains: 'all',
         });
     });
 
@@ -40,7 +40,7 @@ describe('Internal generateSauceConnectOptions test', function () {
         const result = await provider._generateSauceConnectOptions();
 
         expect(result).eql({
-            connectorLogging: false
+            connectorLogging: false,
         });
     });
 });

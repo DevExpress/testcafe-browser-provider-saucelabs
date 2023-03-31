@@ -25,57 +25,57 @@ describe('Internal generateCapabilities test', function () {
                 expected: {
                     browserName: 'chrome',
                     version:     '88',
-                    platform:    'mac 13'
-                }
+                    platform:    'mac 13',
+                },
             },
             {
                 desktopUA: 'Chrome@88:mac 10.15',
                 expected:  {
                     browserName: 'chrome',
                     version:     '88',
-                    platform:    'mac 10.15'
-                }
+                    platform:    'mac 10.15',
+                },
             },
             {
                 desktopUA: 'Chrome@88:mac 10.14',
                 expected:  {
                     browserName: 'chrome',
                     version:     '88',
-                    platform:    'mac 10.14'
-                }
+                    platform:    'mac 10.14',
+                },
             },
             {
                 desktopUA: 'Chrome@88:mac 10.13',
                 expected:  {
                     browserName: 'chrome',
                     version:     '88',
-                    platform:    'mac 10.13'
-                }
+                    platform:    'mac 10.13',
+                },
             },
             {
                 desktopUA: 'Chrome@88:mac 10.12',
                 expected:  {
                     browserName: 'chrome',
                     version:     '88',
-                    platform:    'mac 10.12'
-                }
+                    platform:    'mac 10.12',
+                },
             },
             {
                 desktopUA: 'Chrome@88:mac 10.11',
                 expected:  {
                     browserName: 'chrome',
                     version:     '88',
-                    platform:    'mac 10.11'
-                }
+                    platform:    'mac 10.11',
+                },
             },
             {
                 desktopUA: 'Chrome@87:mac 10.10',
                 expected:  {
                     browserName: 'chrome',
                     version:     '87',
-                    platform:    'mac 10.10'
-                }
-            }
+                    platform:    'mac 10.10',
+                },
+            },
         ];
 
         const promises = testCases.map(async testCase => {
@@ -96,7 +96,7 @@ describe('Internal generateCapabilities test', function () {
             browserName:      'chrome',
             version:          '88',
             platform:         'mac 13',
-            screenResolution: '1920x1200'
+            screenResolution: '1920x1200',
         });
     });
 
@@ -109,7 +109,7 @@ describe('Internal generateCapabilities test', function () {
             browserName:       'chrome',
             version:           '88',
             platform:          'mac 13',
-            extendedDebugging: true
+            extendedDebugging: true,
         });
     });
 
@@ -121,7 +121,7 @@ describe('Internal generateCapabilities test', function () {
         expect(result).eql({
             browserName: 'chrome',
             version:     '88',
-            platform:    'mac 13'
+            platform:    'mac 13',
         });
     });
 });
