@@ -27,7 +27,7 @@ describe('Browser names', function () {
                     'Samsung Galaxy S10 WQHD GoogleAPI Emulator@11.0',
                     'Android GoogleAPI Emulator@12.0',
                     'iPad Simulator@13.0',
-                    'iPhone Simulator@13.0'
+                    'iPhone Simulator@13.0',
                 ];
 
                 var areBrowsersInList = commonBrowsers
@@ -52,7 +52,7 @@ describe('Browser names', function () {
             'iPhone Simulator@9.2',
             'Android Emulator Tablet@8.0',
             'Internet Explorer@5.0',
-            'Internet Explorer@11:Linux'
+            'Internet Explorer@11:Linux',
         ];
 
         var expectedResults = [
@@ -67,7 +67,7 @@ describe('Browser names', function () {
             false,
             true,
             false,
-            false
+            false,
         ];
 
         var validationPromises = browserNames

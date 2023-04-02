@@ -7,14 +7,14 @@ fixture `Resize`
 test('Resize test', async t => {
     var originalSize = await t.eval(() => ({
         width:  window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
     }));
 
     await t.resizeWindow(500, 500);
 
     var newSize = await t.eval(() => ({
         width:  window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
     }));
 
     expect(newSize.width).to.be.not.equal(originalSize.width);

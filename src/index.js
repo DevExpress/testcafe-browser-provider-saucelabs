@@ -1,11 +1,10 @@
 import SauceLabsConnector from 'saucelabs-connector';
 import parseCapabilities from 'desired-capabilities';
-import requestAPI from 'request';
 import Promise from 'pinkie';
-import pify from 'pify';
 import util from 'util';
 import { assign } from 'lodash';
 import * as fs from 'fs';
+import { httpsRequest } from './https-request';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
                           'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
@@ -15,8 +14,6 @@ const WAIT_FOR_FREE_MACHINES_REQUEST_INTERVAL  = 60000;
 const WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT = 45;
 const MAX_TUNNEL_CONNECT_RETRY_COUNT           = 3;
 
-const promisify = fn => pify(fn, Promise);
-const request   = promisify(requestAPI, Promise);
 const readFile  = util.promisify(fs.readFile);
 
 const isDesktop = platformInfo => platformInfo.platformGroup === 'Desktop';
@@ -38,13 +35,12 @@ async function fetchPlatforms () {
         throw new Error(AUTH_FAILED_ERROR);
 
     const host = process.env.SAUCE_API_HOST || 'us-west-1.saucelabs.com';
-    const response = await request(`https://api.${host}/rest/v1.1/info/platforms/all`,
-        {
-            'auth': {
-                'user': process.env['SAUCE_USERNAME'],
-                'pass': process.env['SAUCE_ACCESS_KEY']
-            }
-        });
+    const response = await httpsRequest({
+        hostname: `api.${host}`,
+        path:     '/rest/v1.1/info/platforms/all',
+        user:     process.env['SAUCE_USERNAME'],
+        password: process.env['SAUCE_ACCESS_KEY']
+    });
 
     try {
         return JSON.parse(response.body);

@@ -30,7 +30,7 @@ describe('Useragent info', function () {
                 },
                 end: function (data) {
                     report += data;
-                }
+                },
             })
             .run()
             .then(function (failedCount) {

@@ -1,5 +1,6 @@
 {
   "rules": {
+    "comma-dangle": ["error", "always-multiline"],
     "no-unused-expressions": 0,
     "max-nested-callbacks": ["error", 4]
   },
