@@ -57,7 +57,6 @@ jobs:
           name: npm
           path: |
             ${{steps.package-name.outputs.packageName}}.tgz
-            package-lock.json
   changes:
     # TODO: currently cannot generate a list of changes after rebase
     runs-on: ubuntu-latest
