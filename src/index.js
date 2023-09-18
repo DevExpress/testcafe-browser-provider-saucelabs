@@ -5,6 +5,7 @@ import util from 'util';
 import { assign } from 'lodash';
 import * as fs from 'fs';
 import { httpsRequest } from './https-request';
+import path from 'path';
 
 const AUTH_FAILED_ERROR = 'Authentication failed. Please assign the correct username and access key ' +
                           'to the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables.';
@@ -13,8 +14,11 @@ const SAUCE_LABS_REQUESTED_MACHINES_COUNT      = 1;
 const WAIT_FOR_FREE_MACHINES_REQUEST_INTERVAL  = 60000;
 const WAIT_FOR_FREE_MACHINES_MAX_ATTEMPT_COUNT = 45;
 const MAX_TUNNEL_CONNECT_RETRY_COUNT           = 3;
+const minWindowSize                            = 0;
+const maxWindowSize                            = Number.MAX_SAFE_INTEGER;
 
 const readFile  = util.promisify(fs.readFile);
+const access    = util.promisify(fs.access);
 
 const isDesktop = platformInfo => platformInfo.platformGroup === 'Desktop';
 
@@ -366,16 +370,79 @@ export default {
     },
 
     async resizeWindow (id, width, height, currentWidth, currentHeight) {
-        const currentWindowSize     = await this.openedBrowsers[id].getWindowSize();
+        const currentWindowSize     = await this._getWindowSize(this.openedBrowsers[id]);
         const currentClientAreaSize = { width: currentWidth, height: currentHeight };
         const requestedSize         = { width, height };
         const correctedSize         = getCorrectedSize(currentClientAreaSize, currentWindowSize, requestedSize);
 
-        await this.openedBrowsers[id].setWindowSize(correctedSize.width, correctedSize.height);
+        await this._setWindowSize(this.openedBrowsers[id], correctedSize.width, correctedSize.height);
+    },
+
+    async _getWindowSize (browser) {
+        if (!browser.isW3C) 
+            return browser._getWindowSize();
+    
+        const { width, height } = await browser.getWindowRect();
+
+        return { width, height };
+    },
+
+    async _setWindowSize (browser, width, height) {
+        if (typeof width !== 'number' || typeof height !== 'number') 
+            throw new Error('setWindowSize expects width and height of type number');
+    
+        if (width < minWindowSize || width > maxWindowSize || height < minWindowSize || height > maxWindowSize) 
+            throw new Error('setWindowSize expects width and height to be a number in the 0 to 2^31 − 1 range');
+    
+        if (!browser.isW3C) 
+            return browser._setWindowSize(width, height);
+        
+        return await browser.setWindowRect(null, null, width, height);
     },
 
     async takeScreenshot (id, screenshotPath) {
-        await this.openedBrowsers[id].saveScreenshot(screenshotPath);
+        await this._saveScreenshot(this.openedBrowsers[id], screenshotPath);
+    },
+
+    async _saveScreenshot (browser, filepath) {
+        if (typeof filepath !== 'string' || !filepath.endsWith('.png')) 
+            throw new Error('saveScreenshot expects a filepath of type string and ".png" file ending');
+    
+        const absoluteFilepath = this._getAbsoluteFilepath(filepath);
+
+        await this._assertDirectoryExists(absoluteFilepath);
+    
+        let screenBuffer;
+
+        if (browser.isBidi) {
+            const { contexts } = await browser.browsingContextGetTree({});
+            const { data } = await browser.browsingContextCaptureScreenshot({
+                context: contexts[0].context
+            });
+
+            screenBuffer = data;
+        }
+        else 
+            screenBuffer = await browser.takeScreenshot();
+        
+        const screenshot = Buffer.from(screenBuffer, 'base64');
+
+        fs.writeFileSync(absoluteFilepath, screenshot);
+    
+        return screenshot;
+    },
+
+    _getAbsoluteFilepath (filepath) {
+        return filepath.startsWith('/') || filepath.startsWith('\\') || filepath.match(/^[a-zA-Z]:\\/)
+          ? filepath
+          : path.join(process.cwd(), filepath);
+    },
+
+    async _assertDirectoryExists (filepath) {
+        const exist = await access(path.dirname(filepath)).then(() => true, () => false);
+
+        if (!exist) 
+            throw new Error(`directory (${path.dirname(filepath)}) doesn't exist`);
     },
 
     async reportJobResult (id, jobResult, jobData) {
