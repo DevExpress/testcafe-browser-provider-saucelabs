@@ -33,7 +33,7 @@
     "desired-capabilities": "^0.1.0",
     "lodash": "^4.14.2",
     "pinkie": "^2.0.4",
-    "saucelabs-connector": "^1.1.0"
+    "saucelabs-connector": "https://github.com/Aleksey28/builds/raw/main/saucelabs-connector-2.0.0.tgz"
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",

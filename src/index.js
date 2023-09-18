@@ -382,9 +382,10 @@ export default {
         if (jobResult !== this.JOB_RESULT.done && jobResult !== this.JOB_RESULT.errored)
             return;
 
-        const browser   = this.openedBrowsers[id];
+        const connector = await this._getConnector();
         const jobPassed = jobResult === this.JOB_RESULT.done && jobData.total === jobData.passed;
+        const status    = jobPassed ? 'passed' : 'failed';
 
-        await browser.sauceJobStatus(jobPassed);
+        await connector.setSauceJobStatus(this.openedBrowsers[id], status);
     }
 };
