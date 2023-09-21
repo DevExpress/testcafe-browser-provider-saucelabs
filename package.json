@@ -1,6 +1,6 @@
 {
   "name": "testcafe-browser-provider-saucelabs",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "saucelabs TestCafe browser provider plugin.",
   "repository": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
   "homepage": "https://github.com/DevExpress/testcafe-browser-provider-saucelabs",
@@ -33,7 +33,7 @@
     "desired-capabilities": "^0.1.0",
     "lodash": "^4.14.2",
     "pinkie": "^2.0.4",
-    "saucelabs-connector": "^1.1.0"
+    "saucelabs-connector": "^2.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",
