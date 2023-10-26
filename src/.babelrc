@@ -1,11 +1,19 @@
 {
   "compact": false,
   "presets": [
-    "es2015-loose",
-    "babel-preset-stage-3"
+    [
+      "@babel/preset-env",
+      {
+        "loose": true
+      }
+    ]
   ],
   "plugins": [
-    "transform-runtime",
-    "add-module-exports"
+    ["@babel/plugin-transform-runtime", { "loose": true }],
+    "add-module-exports",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-syntax-import-meta",
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    "@babel/plugin-proposal-json-strings"
   ]
 }
