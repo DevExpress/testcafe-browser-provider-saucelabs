@@ -17,7 +17,7 @@ describe('Useragent info', function () {
         return testcafe.close();
     });
 
-    it('Should add a link to Saucelabs', function () {
+    it('Should ad a link to Saucelabs', function () {
         var report = '';
         var runner = testcafe.createRunner();
 
