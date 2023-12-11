@@ -22,7 +22,7 @@ describe('Useragent info', function () {
         var runner = testcafe.createRunner();
 
         return runner
-            .browsers('saucelabs:chrome@latest')
+            .browsers('saucelabs:chrome@119')
             .src('test/testcafe/resize-test.js')
             .reporter('json', {
                 write: function (data) {
