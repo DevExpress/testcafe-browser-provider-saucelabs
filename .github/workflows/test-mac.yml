@@ -79,6 +79,7 @@ jobs:
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+          SAUCE_CONNECT_VERSION: ${{ secrets.SAUCE_CONNECT_VERSION }}
       - uses: actions/github-script@v6
         with:
           script: |
