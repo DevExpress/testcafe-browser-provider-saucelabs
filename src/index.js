@@ -434,8 +434,8 @@ export default {
 
     _getAbsoluteFilepath (filepath) {
         return filepath.startsWith('/') || filepath.startsWith('\\') || filepath.match(/^[a-zA-Z]:\\/)
-          ? filepath
-          : path.join(process.cwd(), filepath);
+            ? filepath
+            : path.join(process.cwd(), filepath);
     },
 
     async _assertDirectoryExists (filepath) {
