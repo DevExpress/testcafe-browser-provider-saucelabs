@@ -54,7 +54,7 @@
     "mocha": "^10.4.0",
     "publish-please": "^5.5.2",
     "sinon": "^7.2.5",
-    "testcafe": "latest",
+    "testcafe": "^3.6.2",
     "tmp": "0.0.28"
   },
   "overrides": {
