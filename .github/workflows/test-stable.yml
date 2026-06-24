@@ -78,7 +78,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: npx gulp testNoBuild
+      - run: npx --no-install gulp testNoBuild
         timeout-minutes: 60
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
